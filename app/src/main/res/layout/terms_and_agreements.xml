@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A2A66">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center"
+        android:background="#0A2A66">
+
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/ph906"
+            android:contentDescription="App Logo"
+            android:layout_marginBottom="12dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WELCOME TO"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PH0906 SYSTEM"
+            android:textSize="26sp"
+            android:textColor="#FFD700"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+
+    <!-- Scrollable Terms Content inside gradient card -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="16dp"
+        android:background="@drawable/gradient_bg"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="\nTerms And Agreements"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:paddingBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/tvTermsContentParent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Effective Date: October 31, 2025\nLast Updated: October 31, 2025\n\n
+Welcome to Hello, PH0906! This app helps you manage your child’s school and personal data. By using the app, you agree to the terms below.\n\n
+1. Who Can Use the App\n
+• You must be your child’s parent or legal guardian.\n
+• Your child is under 18 years old.\n\n
+2. Your Role\n
+• You can view and manage your child’s data in the app.\n
+• Keep your login details safe and don’t share them.\n\n
+3. Who Can See the Data\n
+• Caseworkers (staff) can see all data to support your child’s needs.\n
+• Other users (like parents or students) can only see limited information.\n
+• Sensitive data is kept private and not shown to the public.\n\n
+4. Using the App\n\n
+5. Privacy\n
+• Use the app only for your child’s education and support.\n
+• Don’t misuse or share other people’s data.\n
+• We follow privacy laws to protect your child’s data.\n
+• Read our [Privacy Policy] to learn more.\n\n
+6. When Your Child Turns 18\n
+• Your parent’s access will be removed unless you allow it.\n\n
+7. Our Responsibility\n
+• We do our best, but we’re not responsible for any problems caused by using the app.\n\n
+8. Updates\n
+• We may change these terms. If you keep using the app, it means you agree to the new terms.\n\n\n"
+                android:textColor="@android:color/white"
+                android:textSize="19sp"
+                android:lineSpacingExtra="6dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Accept Button -->
+    <Button
+        android:id="@+id/btnAcceptParent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="I Agree To All The Terms And Agreements"
+        android:backgroundTint="#FFD700"
+        android:textColor="@android:color/black"
+        android:layout_margin="20dp"
+        android:padding="14dp"
+        android:textStyle="bold"
+        android:elevation="4dp"
+        android:stateListAnimator="@null"/>
+</LinearLayout>
