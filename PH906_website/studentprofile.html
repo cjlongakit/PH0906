@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Profile</title>
+  <link rel="stylesheet" href="home.css" />
+  <link rel="stylesheet" href="studentprofile.css" />
+</head>
+<body>
+  <div class="home-container">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <button onclick="window.history.back()" class="back-btn">BACK</button>
+      <img src="ph0906logo.png" alt="Church Icon" class="icon" style="height:3rem;">
+      <h1 style="margin:0;font-size:2.2rem;">HELLO, <span class="highlight">PH0906!</span></h1>
+    </div>
+    <div class="profile-card">
+      <div class="profile-photo"></div>
+      <div class="profile-actions">
+        <a href="#" id="edit-link">EDIT</a>
+        <a href="#" id="history-link">HISTORY</a>
+      </div>
+      <div class="profile-info">
+        <h2 id="profile-ph906"></h2>
+        <div id="profile-role">student</div>
+        <hr>
+        <div class="profile-fields">
+          <div><b>Full Name:</b> <span id="profile-name"></span></div>
+          <div><b>Mobile:</b> <span id="profile-mobile"></span></div>
+          <div><b>Nickname:</b> <span id="profile-nickname"></span></div>
+          <div><b>Mobile #:</b> <span id="profile-mobile2"></span></div>
+          <div><b>Address:</b> <span id="profile-address"></span></div>
+          <div><b>Guardian’s Full name:</b> <span id="profile-guardian"></span></div>
+          <div><b>Guardian’s mobile #:</b> <span id="profile-guardianmobile"></span></div>
+          <div><b>Water Baptized:</b> <span id="profile-baptized"></span></div>
+          <div><b>Teacher:</b> <span id="profile-teacher"></span></div>
+          <div><b>Type:</b> <span id="profile-type"></span></div>
+          <div><b>Deadline:</b> <span id="profile-deadline"></span></div>
+          <div><b>Status:</b> <span id="profile-status"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+    const idx = getQueryParam('idx');
+    const students = JSON.parse(localStorage.getItem('students') || '[]');
+    const student = students[idx];
+
+    if (student) {
+      document.getElementById('profile-ph906').textContent = `PH0906- ${student.ph906}`;
+      document.getElementById('profile-name').textContent = student.name || '';
+      document.getElementById('profile-mobile').textContent = student.mobile || '';
+      document.getElementById('profile-nickname').textContent = student.nickname || '';
+      document.getElementById('profile-mobile2').textContent = student.mobile2 || '';
+      document.getElementById('profile-address').textContent = student.address || '';
+      document.getElementById('profile-guardian').textContent = student.guardian || '';
+      document.getElementById('profile-guardianmobile').textContent = student.guardianmobile || '';
+      document.getElementById('profile-baptized').textContent = student.baptized || '';
+      document.getElementById('profile-teacher').textContent = student.teacher || '';
+      document.getElementById('profile-type').textContent = student.type || '';
+      document.getElementById('profile-deadline').textContent = student.deadline || '';
+      document.getElementById('profile-status').textContent = student.status || '';
+    }
+
+    if (currentFilter === 'asc') {
+      students.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+    } else if (currentFilter === 'desc') {
+      students.sort((a, b) => b.name.toLowerCase().localeCompare(a.name.toLowerCase()));
+    } else if (currentFilter === 'phasc') {
+      students.sort((a, b) => parseInt(a.ph906, 10) - parseInt(b.ph906, 10));
+    } else if (currentFilter === 'phdesc') {
+      students.sort((a, b) => parseInt(b.ph906, 10) - parseInt(a.ph906, 10));
+    }
+  </script>
+</body>
+</html>

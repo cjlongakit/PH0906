@@ -1,0 +1,164 @@
+body {
+  background-image: url("darkbluebackground.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+}
+
+.profile-card {
+  background: rgba(0, 17, 90, 0.97);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  margin: 2.5rem auto 0 auto;
+  padding: 2.5rem 2rem 2rem 2rem;
+  max-width: 600px;
+  position: relative;
+}
+
+.profile-photo {
+  width: 90px;
+  height: 90px;
+  background: #e6eaf7;
+  border-radius: 18px;
+  margin: -70px auto 1.5rem auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.profile-actions {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-actions a {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: underline;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+.profile-actions a:hover {
+  color: #FFD700;
+}
+
+.profile-info {
+  text-align: center;
+}
+
+#profile-ph906 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+  letter-spacing: 1px;
+}
+
+#profile-role {
+  font-size: 1.1rem;
+  margin-bottom: 0.7rem;
+  color: #FFD700;
+}
+
+.profile-fields {
+  text-align: left;
+  margin: 1.5rem auto 0 auto;
+  max-width: 400px;
+  font-size: 1.1rem;
+  line-height: 2;
+}
+
+hr {
+  border: none;
+  border-top: 1.5px solid #fff2;
+  margin: 1rem 0;
+}
+
+.back-btn {
+  background: #e6eaf7;
+  color: #00115a;
+  border: none;
+  border-radius: 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s, color 0.2s;
+}
+.back-btn:hover {
+  background: #FFD700;
+  color: #00115a;
+}
+
+.profile-letters {
+  margin-top: 2.5rem;
+}
+
+.profile-letters h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #FFD700;
+}
+
+.profile-letters table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  color: #00115a;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.profile-letters th, .profile-letters td {
+  padding: 0.7rem 0.5rem;
+  text-align: left;
+  font-size: 1rem;
+}
+
+.profile-letters th {
+  background: #003087;
+  color: #fff;
+}
+
+.profile-letters tr:nth-child(even) {
+  background: #f7faff;
+}
+
+// Find all letters for this student by name
+const letters = students
+  .filter(s => s.name === student.name)
+  .sort((a, b) => new Date(a.deadline) - new Date(b.deadline)); // Sort by deadline
+
+// Render the letters table
+const lettersTbody = document.getElementById('letters-tbody');
+lettersTbody.innerHTML = '';
+letters.forEach(letter => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${letter.type || ''}</td>
+    <td>${letter.deadline || ''}</td>
+    <td>${letter.status || ''}</td>
+  `;
+  lettersTbody.appendChild(tr);
+});
+
+<div class="profile-letters">
+  <h3>Letters</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Deadline</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="letters-tbody"></tbody>
+  </table>
+</div>

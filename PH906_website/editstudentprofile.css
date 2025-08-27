@@ -1,0 +1,44 @@
+<script>
+  function getQueryParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+  }
+  const idx = getQueryParam('idx');
+  document.getElementById('edit-link').href = `editstudentprofile.html?idx=${idx}`;
+</script>
+
+body {
+  background-image: url("darkbluebackground.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+}
+
+.home-container {
+  background: rgba(0, 17, 90, 0.97);
+  margin: 2rem auto;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  max-width: 500px;
+  padding: 2.5rem 2rem 2rem 2rem;
+}
+
+.add-btn {
+  background: #e6eaf7;
+  color: #00115a;
+  border: none;
+  border-radius: 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s, color 0.2s;
+}
+.add-btn:hover {
+  background: #FFD700;
+  color: #00115a;
+}

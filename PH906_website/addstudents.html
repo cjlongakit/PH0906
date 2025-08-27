@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Student</title>
+  <link rel="stylesheet" href="home.css" />
+</head>
+<body>
+  <div class="home-container">
+    <h2>Add Student</h2>
+    <form id="add-student-form">
+      <label>PH906:
+        <input type="text" name="ph906" required>
+      </label><br><br>
+      <label>Name:
+        <input type="text" name="name" required>
+      </label><br><br>
+      <label>Address:
+        <input type="text" name="address" required>
+      </label><br><br>
+      <label>Type:
+        <input type="text" name="type" required>
+      </label><br><br>
+      <label>Deadline:
+        <input type="date" name="deadline" required>
+      </label><br><br>
+      <button type="submit" class="add-btn">Add Student</button>
+    </form>
+    <br>
+    <a href="home.html">Back to Home</a>
+  </div>
+  <script>
+    document.getElementById('add-student-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const student = {
+        ph906: form.ph906.value,
+        name: form.name.value,
+        address: form.address.value,
+        type: form.type.value,
+        deadline: form.deadline.value,
+        status: 'PENDING'
+      };
+      const students = JSON.parse(localStorage.getItem('students') || '[]');
+      students.push(student);
+      localStorage.setItem('students', JSON.stringify(students));
+      alert('Student added!');
+      window.location.href = 'home.html';
+    });
+  </script>
+</body>
+</html>

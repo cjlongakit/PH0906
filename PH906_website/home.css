@@ -1,0 +1,241 @@
+body {
+  background-image: url("darkbluebackground.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Make background adaptable and fixed */
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff;
+}
+
+.home-container {
+  background: rgba(0, 17, 90, 0.97);
+  margin: 2rem auto;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  max-width: 1100px;
+  padding: 2.5rem 2rem 2rem 2rem;
+}
+
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #fff2;
+  padding-bottom: 1.2rem;
+}
+
+.header-group {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.icon {
+  height: 5rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.main-header h1 {
+  font-size: 2.8rem;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.highlight {
+  color: #FFD700;
+}
+
+.menu-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+.menu-icon span {
+  display: block;
+  width: 36px;
+  height: 5px;
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.main-nav {
+  display: flex;
+  gap: 2.5rem;
+  margin: 1.5rem 0 1rem 0;
+  border-bottom: 2px solid #fff2;
+  padding-bottom: 0.5rem;
+}
+
+.main-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding-bottom: 0.3rem;
+  transition: color 0.2s, border-bottom 0.2s;
+  border-bottom: 3px solid transparent;
+}
+
+.main-nav a.active,
+.main-nav a:hover {
+  color: #3b82f6;
+  border-bottom: 3px solid #3b82f6;
+}
+
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0 1.5rem 0;
+  position: relative;
+}
+
+.filter-btn {
+  background: #00115a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.search-input {
+  flex: 1;
+  min-width: 220px;
+  max-width: 350px;
+  padding: 0.7rem 1.2rem;
+  border-radius: 20px;
+  border: none;
+  background: #e6eaf7;
+  color: #222;
+  font-size: 1.1rem;
+  outline: none;
+}
+
+.add-btn {
+  background: #e6eaf7;
+  color: #222;
+  border: none;
+  border-radius: 18px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.add-btn span {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.table-section {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+th, td {
+  padding: 1rem 0.8rem;
+  text-align: left;
+  font-size: 1.05rem;
+}
+
+th {
+  background: #003087;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+td {
+  color: #222;
+  background: #f7faff;
+  border-bottom: 1px solid #e0e7ef;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.4em 1.2em;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1rem;
+  background: #444d5c;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.status.pending {
+  background: #444d5c;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.remove-btn:hover {
+  color: #e11d48;
+}
+
+.filter-dropdown {
+  position: absolute;
+  background: #00115a;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  margin-top: 0.5rem;
+  z-index: 10;
+  padding: 0.5rem 0;
+  min-width: 150px;
+  left: 0;
+}
+
+.filter-dropdown button {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.7rem 1.2rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.filter-dropdown button:hover {
+  background: #003087;
+}
+
+@media (max-width: 900px) {
+  .main-header h1 { font-size: 2rem; }
+  .icon { height: 3.5rem; }
+  .home-container { padding: 1.2rem 0.5rem; }
+  th, td { padding: 0.7rem 0.4rem; }
+}
