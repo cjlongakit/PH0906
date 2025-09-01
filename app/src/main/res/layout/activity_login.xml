@@ -72,7 +72,7 @@
         <EditText
             android:id="@+id/editTextText"
             android:layout_width="215dp"
-            android:layout_height="45dp"
+            android:layout_height="48dp"
             android:hint="PH0906"
             android:background="@android:color/white"
             android:padding="8dp"
@@ -91,7 +91,7 @@
         <EditText
             android:id="@+id/editTextTextPassword"
             android:layout_width="221dp"
-            android:layout_height="45dp"
+            android:layout_height="48dp"
             android:hint="Password"
             android:background="@android:color/white"
             android:padding="8dp"

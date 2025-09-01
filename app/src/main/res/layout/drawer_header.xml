@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="bottom"
+    android:background="#0A2A66">
+
+    <!-- App Logo -->
+    <ImageView
+        android:id="@+id/headerLogo"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/ph906"
+        android:contentDescription="App Logo"
+        android:layout_marginBottom="8dp"
+        android:scaleType="centerInside" />
+
+    <!-- App Name -->
+    <TextView
+        android:id="@+id/headerTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PH0906 SYSTEM"
+        android:textColor="#FFD700"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/headerSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome!"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+</LinearLayout>

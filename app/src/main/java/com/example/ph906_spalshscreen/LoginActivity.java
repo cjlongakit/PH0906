@@ -1,4 +1,4 @@
-package com.example.ph906_spalshscreen; // Change to your actual package name
+package com.example.ph906_spalshscreen;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,17 +14,17 @@ public class LoginActivity extends AppCompatActivity {
     EditText usernameInput, passwordInput;
     Button continueButton;
 
-    // Hardcoded credentials for now
     private final String CORRECT_USERNAME = "PH0906";
     private final String CORRECT_PASSWORD = "Password";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_login); // keeps your full XML intact
 
+        // Reference views from your XML
         usernameInput = findViewById(R.id.editTextText);
-        passwordInput = findViewById(R.id.editTextTextPassword); // fixed ID
+        passwordInput = findViewById(R.id.editTextTextPassword);
         continueButton = findViewById(R.id.button2);
 
         continueButton.setOnClickListener(new View.OnClickListener() {
@@ -33,12 +33,16 @@ public class LoginActivity extends AppCompatActivity {
                 String enteredUsername = usernameInput.getText().toString().trim();
                 String enteredPassword = passwordInput.getText().toString().trim();
 
-                if (enteredUsername.equals(CORRECT_USERNAME) && enteredPassword.equals(CORRECT_PASSWORD)) {
+                if (enteredUsername.equals(CORRECT_USERNAME) &&
+                        enteredPassword.equals(CORRECT_PASSWORD)) {
+
+                    // Go to MainActivity safely
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-                    finish();
                 } else {
-                    Toast.makeText(LoginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,
+                            "Invalid username or password", Toast.LENGTH_SHORT).show();
                 }
             }
         });
