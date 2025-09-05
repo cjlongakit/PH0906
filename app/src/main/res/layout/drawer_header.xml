@@ -1,39 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="bottom"
-    android:background="#0A2A66">
+    android:layout_height="?attr/actionBarSize"
+    android:background="#0A2A66"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    android:padding="8dp">
 
-    <!-- App Logo -->
-    <ImageView
-        android:id="@+id/headerLogo"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:src="@drawable/ph906"
-        android:contentDescription="App Logo"
-        android:layout_marginBottom="8dp"
-        android:scaleType="centerInside" />
-
-    <!-- App Name -->
-    <TextView
-        android:id="@+id/headerTitle"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PH0906 SYSTEM"
-        android:textColor="#FFD700"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <!-- Subtitle -->
-    <TextView
-        android:id="@+id/headerSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome!"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
+        <ImageView
+            android:id="@+id/headerLogo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ph906"
+            android:contentDescription="App Logo"
+            android:scaleType="centerInside" />
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="8dp">
+
+            <TextView
+                android:id="@+id/headerTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PH0906 SYSTEM"
+                android:textColor="#FFD700"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/headerSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome!"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.appcompat.widget.Toolbar>

@@ -13,6 +13,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ph906_spalshscreen.ui.home.HomeFragment;
 import com.example.ph906_spalshscreen.ui.settings.SettingsFragment;
+import com.example.ph906_spalshscreen.ui.about.AboutFragment;
+import com.example.ph906_spalshscreen.ui.privacy.DataPrivacyFragment;
+import com.example.ph906_spalshscreen.ui.privacy.DataPrivacyAdultFragment;
+import com.example.ph906_spalshscreen.ui.privacy.TermsAndAgreementsFragment;
+import com.example.ph906_spalshscreen.ui.privacy.TermsAndAgreementsOlderFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,9 +59,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_home) {
             replaceFragment(new HomeFragment());
+
         } else if (id == R.id.nav_settings) {
             replaceFragment(new SettingsFragment());
+
+        } else if (id == R.id.nav_about) {
+            replaceFragment(new AboutFragment());
+
+        } else if (id == R.id.nav_data_privacy_minor) {
+            replaceFragment(new DataPrivacyFragment());
+
+        } else if (id == R.id.nav_data_privacy_adult) {
+            replaceFragment(new DataPrivacyAdultFragment());
+
+        } else if (id == R.id.nav_terms_minor) {
+            replaceFragment(new TermsAndAgreementsFragment());
+
+        } else if (id == R.id.nav_terms_adult) {
+            replaceFragment(new TermsAndAgreementsOlderFragment());
+
         } else if (id == R.id.nav_logout) {
+            // Logout → back to LoginActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

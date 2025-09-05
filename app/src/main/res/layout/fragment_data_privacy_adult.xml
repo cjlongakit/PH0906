@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A2A66">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center"
+        android:background="#0A2A66">
+
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/ph906"
+            android:contentDescription="App Logo"
+            android:layout_marginBottom="12dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WELCOME TO"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PH0906 SYSTEM"
+            android:textSize="26sp"
+            android:textColor="#FFD700"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+
+    <!-- Scrollable Privacy Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="16dp"
+        android:background="@drawable/gradient_bg"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="\nPrivacy Policy (Adult)"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:paddingBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/tvPrivacyAdultContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Effective Date: October 31, 2025\nLast Updated: October 31, 2025\n\n
+This Privacy Policy explains how Hello, PH0906! collects, uses, shares, and protects your personal data. We follow the Data Privacy Act of 2012 (Republic Act No. 10173) of the Philippines to keep your information safe.\n\n
+What We Collect\n
+• Name, birthdate, contact info\n
+• School and grade details\n
+• Caseworker notes and support records\n
+• App usage data\n\n
+Who Can See Your Data\n
+• Caseworkers can view all your data to support you\n
+• Other users may see basic info (like name or grade), but private details stay hidden\n
+• You can always view your own data, but access may be limited per support staff\n\n
+Why We Use Your Data\n
+• To help caseworkers support you\n
+• To track your progress\n
+• To improve app features\n\n
+What We Don’t Do\n
+• We don’t sell your data\n
+• We don’t share private info without permission\n
+• We don’t show sensitive data to the public\n\n
+Your Rights\n
+• View your personal data\n
+• Correct wrong information\n
+• Ask us to delete your data\n
+• Withdraw consent anytime\n
+• File a complaint with the National Privacy Commission"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:lineSpacingExtra="6dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Accept Button -->
+    <Button
+        android:id="@+id/btnAcceptAdult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="I Agree To All The Privacy Policy"
+        android:backgroundTint="#FFD700"
+        android:textColor="@android:color/black"
+        android:layout_margin="20dp"
+        android:padding="14dp"
+        android:textStyle="bold"
+        android:elevation="4dp"
+        android:stateListAnimator="@null"/>
+</LinearLayout>
