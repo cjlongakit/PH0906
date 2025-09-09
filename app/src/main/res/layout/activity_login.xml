@@ -78,8 +78,7 @@
             android:padding="8dp"
             android:inputType="text"
             android:layout_gravity="center_horizontal"
-            android:textColor="#000000"
-            android:hintTextColor="808080"/>
+            android:textColor="#000000"/>
 
 
         <TextView
@@ -100,8 +99,7 @@
             android:padding="8dp"
             android:inputType="textPassword"
             android:layout_gravity="center_horizontal"
-            android:textColor="#000000"
-            android:hintTextColor="808080"/>
+            android:textColor="#000000" />
         <Button
             android:id="@+id/button2"
             android:layout_width="186dp"
