@@ -119,7 +119,9 @@
             android:textAlignment="center"
             android:textColor="#E0E0E0"
             android:layout_marginTop="12dp"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:clickable="true"
+            android:focusable="true"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

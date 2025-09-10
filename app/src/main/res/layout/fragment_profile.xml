@@ -1,15 +1,249 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E3F2FD"
-    android:gravity="center">
+    android:background="@drawable/gradient_bg">
 
-    <TextView
-        android:text="This is Profile Fragment"
-        android:textSize="20sp"
-        android:textColor="#000000"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
-</FrameLayout>
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center_horizontal">
+
+        <!-- Profile Title -->
+        <TextView
+            android:id="@+id/tv_profile_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textColor="@android:color/holo_blue_light"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Profile Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Profile Image -->
+            <ImageView
+                android:id="@+id/img_profile"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:contentDescription="Profile Picture"
+                android:src="@drawable/rodeney"
+                android:scaleType="centerCrop"
+                android:layout_marginBottom="12dp" />
+
+            <!-- User ID -->
+            <TextView
+                android:id="@+id/tv_user_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:text="PH906-0700"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/darker_gray" />
+
+            <!-- First Name -->
+            <TextView
+                android:id="@+id/tv_first_name"
+                android:text="First name: Rodney Divi"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:id="@+id/et_first_name"
+                android:hint="Enter First Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:visibility="gone"/>
+
+            <!-- Last Name -->
+            <TextView
+                android:id="@+id/tv_last_name"
+                android:text="Last Name: Galanida"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/et_last_name"
+                android:hint="Enter Last Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:visibility="gone"/>
+
+            <!-- Birthdate -->
+            <TextView
+                android:id="@+id/tv_birthdate"
+                android:text="Birthdate: June 30, 1997"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/et_birthdate"
+                android:hint="Enter Birthdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:visibility="gone"/>
+
+            <!-- Nickname -->
+            <TextView
+                android:id="@+id/tv_nickname"
+                android:text="Nickname: Divi"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/et_nickname"
+                android:hint="Enter Nickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:visibility="gone"/>
+
+            <!-- Mobile -->
+            <TextView
+                android:id="@+id/tv_mobile"
+                android:text="Mobile #:"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/et_mobile"
+                android:hint="Enter Mobile Number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:inputType="phone"
+                android:visibility="gone"/>
+
+            <!-- Address -->
+            <TextView
+                android:id="@+id/tv_address"
+                android:text="Current Address:"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/et_address"
+                android:hint="Enter Address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:visibility="gone"/>
+
+            <!-- Guardian -->
+            <TextView
+                android:id="@+id/tv_guardian"
+                android:text="Guardian:"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/et_guardian"
+                android:hint="Enter Guardian Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:visibility="gone"/>
+
+            <!-- Guardian Mobile -->
+            <TextView
+                android:id="@+id/tv_guardian_mobile"
+                android:text="Guardian Mobile#:"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/et_guardian_mobile"
+                android:hint="Enter Guardian Mobile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:inputType="phone"
+                android:visibility="gone"/>
+
+            <!-- Baptized -->
+            <TextView
+                android:id="@+id/tv_baptized"
+                android:text="Water baptized: No"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/et_baptized"
+                android:hint="Yes/No"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:visibility="gone"/>
+
+            <!-- Teacher -->
+            <TextView
+                android:id="@+id/tv_teacher"
+                android:text="Teacher:"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/et_teacher"
+                android:hint="Enter Teacher Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:visibility="gone"/>
+
+            <!-- Caseworker -->
+            <TextView
+                android:id="@+id/tv_caseworker"
+                android:text="Caseworker: John"
+                android:textColor="@android:color/holo_blue_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Info"
+            android:layout_marginTop="20dp"/>
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+</ScrollView>

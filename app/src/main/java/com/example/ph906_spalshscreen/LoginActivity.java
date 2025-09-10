@@ -5,46 +5,58 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText usernameInput, passwordInput;
-    Button continueButton;
+    private EditText etUsername, etPassword;
+    private Button btnLogin;
+    private TextView tvForgot;
 
-    private final String CORRECT_USERNAME = "PH0906";
-    private final String CORRECT_PASSWORD = "Password";
+    private PrefsHelper prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login); // keeps your full XML intact
+        setContentView(R.layout.activity_login);
 
-        // Reference views from your XML
-        usernameInput = findViewById(R.id.editTextText);
-        passwordInput = findViewById(R.id.editTextTextPassword);
-        continueButton = findViewById(R.id.button2);
+        // Init SharedPreferences helper
+        prefs = new PrefsHelper(this);
 
-        continueButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String enteredUsername = usernameInput.getText().toString().trim();
-                String enteredPassword = passwordInput.getText().toString().trim();
+        // Bind views
+        etUsername = findViewById(R.id.editTextText);
+        etPassword = findViewById(R.id.editTextTextPassword);
+        btnLogin = findViewById(R.id.button2);
+        tvForgot = findViewById(R.id.textView3);
 
-                if (enteredUsername.equals(CORRECT_USERNAME) &&
-                        enteredPassword.equals(CORRECT_PASSWORD)) {
+        // Login button click
+        btnLogin.setOnClickListener(v -> {
+            String enteredUsername = etUsername.getText().toString().trim();
+            String enteredPassword = etPassword.getText().toString().trim();
 
-                    // Go to MainActivity safely
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(LoginActivity.this,
-                            "Invalid username or password", Toast.LENGTH_SHORT).show();
-                }
+            // For now, username is optional (can add later)
+            String savedPassword = prefs.getPassword();
+
+            if (enteredPassword.equals(savedPassword)) {
+                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+
+                // TODO: Navigate to Home screen or MainActivity
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+
+            } else {
+                Toast.makeText(LoginActivity.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        // Forgot Password click
+        tvForgot.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+            startActivity(intent);
         });
     }
 }

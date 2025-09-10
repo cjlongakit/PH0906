@@ -18,6 +18,7 @@ import com.example.ph906_spalshscreen.ui.privacy.DataPrivacyFragment;
 import com.example.ph906_spalshscreen.ui.privacy.DataPrivacyAdultFragment;
 import com.example.ph906_spalshscreen.ui.privacy.TermsAndAgreementsFragment;
 import com.example.ph906_spalshscreen.ui.privacy.TermsAndAgreementsOlderFragment;
+import com.example.ph906_spalshscreen.ui.profile.ProfileFragment; // ✅ make sure you have this
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Remove default title text
+        // ✅ Remove the default title completely
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
@@ -64,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_home) {
             replaceFragment(new HomeFragment());
+
+        } else if (id == R.id.nav_profile) {
+            replaceFragment(new ProfileFragment()); // ✅ Profile now works
 
         } else if (id == R.id.nav_settings) {
             replaceFragment(new SettingsFragment());

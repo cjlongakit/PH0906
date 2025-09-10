@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
@@ -10,15 +9,40 @@
 
         <item
             android:id="@+id/nav_profile"
-            android:icon="@android:drawable/ic_menu_myplaces"
+            android:icon="@android:drawable/ic_menu_edit"
             android:title="Profile" />
 
+        <!-- Terms & Agreements Menu -->
         <item
             android:id="@+id/nav_terms"
             android:icon="@android:drawable/ic_menu_info_details"
-            android:title="Terms &amp; Agreements" />
+            android:title="Terms &amp; Agreements">
+            <menu>
+                <item
+                    android:id="@+id/nav_terms_minor"
+                    android:title="Minor" />
+                <item
+                    android:id="@+id/nav_terms_adult"
+                    android:title="Adult" />
+            </menu>
+        </item>
 
-        <!-- 🔹 Settings with Submenu -->
+        <!-- Data Privacy Menu -->
+        <item
+            android:id="@+id/nav_privacy"
+            android:icon="@android:drawable/ic_menu_help"
+            android:title="Data Privacy">
+            <menu>
+                <item
+                    android:id="@+id/nav_data_privacy_minor"
+                    android:title="Minor" />
+                <item
+                    android:id="@+id/nav_data_privacy_adult"
+                    android:title="Adult" />
+            </menu>
+        </item>
+
+        <!-- Settings -->
         <item
             android:id="@+id/nav_settings"
             android:icon="@android:drawable/ic_menu_manage"
@@ -26,41 +50,18 @@
             <menu>
                 <item
                     android:id="@+id/nav_change_password"
-                    android:icon="@android:drawable/ic_menu_edit"
                     android:title="Change Password" />
-
                 <item
                     android:id="@+id/nav_about"
-                    android:icon="@android:drawable/ic_menu_info_details"
                     android:title="About" />
-
-                <item
-                    android:id="@+id/nav_data_privacy"
-                    android:icon="@android:drawable/ic_menu_help"
-                    android:title="Data Privacy" />
             </menu>
         </item>
 
+        <!-- Logout -->
         <item
             android:id="@+id/nav_logout"
             android:icon="@android:drawable/ic_lock_power_off"
             android:title="Logout" />
-
-        <item
-            android:id="@+id/nav_data_privacy_minor"
-            android:title="Data Privacy (Minor)" />
-
-        <item
-            android:id="@+id/nav_data_privacy_adult"
-            android:title="Data Privacy (Adult)" />
-
-        <item
-            android:id="@+id/nav_terms_minor"
-            android:title="Terms and Agreements (Minor)" />
-
-        <item
-            android:id="@+id/nav_terms_adult"
-            android:title="Terms and Agreements (Adult)" />
 
     </group>
 </menu>
