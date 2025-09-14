@@ -2,14 +2,76 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:background="#0A2A66">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="About Page"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center"
+        android:background="#0A2A66">
+
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/ph906"
+            android:contentDescription="App Logo"
+            android:layout_marginBottom="12dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ABOUT US"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PH0906 SYSTEM"
+            android:textSize="24sp"
+            android:textColor="#FFD700"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+
+    <!-- Scrollable About Us Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="16dp"
+        android:background="@drawable/gradient_bg"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Who We Are"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:paddingBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/tvAboutContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc nec bibendum finibus, sapien magna commodo ipsum, vitae feugiat nunc lorem sit amet tortor.\n\nCurabitur tincidunt, mauris nec vulputate cursus, orci lacus efficitur velit, et gravida dui nulla sed lectus. Phasellus in nunc in nisl efficitur facilisis.\n\nDonec sit amet orci vitae elit imperdiet eleifend. Fusce tristique risus id turpis ultricies, et faucibus eros blandit. Integer accumsan varius velit, ac facilisis tortor aliquam nec."
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:lineSpacingExtra="6dp"/>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

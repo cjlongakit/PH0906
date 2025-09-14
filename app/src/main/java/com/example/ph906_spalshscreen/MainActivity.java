@@ -12,7 +12,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.ph906_spalshscreen.ui.home.HomeFragment;
-import com.example.ph906_spalshscreen.ui.settings.SettingsFragment;
 import com.example.ph906_spalshscreen.ui.about.AboutFragment;
 import com.example.ph906_spalshscreen.ui.privacy.DataPrivacyFragment;
 import com.example.ph906_spalshscreen.ui.privacy.DataPrivacyAdultFragment;
@@ -68,9 +67,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.nav_profile) {
             replaceFragment(new ProfileFragment()); // ✅ Profile now works
-
-        } else if (id == R.id.nav_settings) {
-            replaceFragment(new SettingsFragment());
 
         } else if (id == R.id.nav_about) {
             replaceFragment(new AboutFragment());
