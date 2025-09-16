@@ -29,12 +29,28 @@ android {
 }
 
 dependencies {
-
+    // AndroidX + Material
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
+
+    // Unit/UI testing
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
+    // Retrofit + Gson
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    // OkHttp logging (needed for network debug logs)
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
+
+    // Gson (JSON parser)
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // RecyclerView
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
 }

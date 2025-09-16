@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 
 public class PrefsHelper {
     private static final String PREF_NAME = "UserPrefs";
-    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_TOKEN = "token";
+    private static final String KEY_USERNAME = "username";
+    private static final String KEY_AGE = "age";
 
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
@@ -15,12 +17,34 @@ public class PrefsHelper {
         editor = prefs.edit();
     }
 
-    public void savePassword(String password) {
-        editor.putString(KEY_PASSWORD, password);
+    public void saveToken(String token) {
+        editor.putString(KEY_TOKEN, token);
         editor.apply();
     }
 
-    public String getPassword() {
-        return prefs.getString(KEY_PASSWORD, "PH0906"); // default password
+    public String getToken() {
+        return prefs.getString(KEY_TOKEN, null);
+    }
+
+    public void saveUsername(String username) {
+        editor.putString(KEY_USERNAME, username);
+        editor.apply();
+    }
+
+    public String getUsername() {
+        return prefs.getString(KEY_USERNAME, null);
+    }
+
+    public void saveAge(int age) {
+        editor.putInt(KEY_AGE, age);
+        editor.apply();
+    }
+
+    public int getAge() {
+        return prefs.getInt(KEY_AGE, 0);
+    }
+
+    public void clearAll() {
+        editor.clear().apply();
     }
 }
