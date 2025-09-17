@@ -4,46 +4,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:background="@drawable/login_gradient"
     android:padding="16dp">
 
+    <!-- Title -->
     <TextView
         android:id="@+id/tv_timetable_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Timetable"
-        android:textSize="20sp"
+        android:text="Events &amp; Timetable"
+        android:textSize="26sp"
         android:textStyle="bold"
-        android:layout_gravity="center_horizontal" />
+        android:textColor="#FFD700"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp" />
 
-    <!-- CalendarView with the exact id used in code -->
-
-    <!-- Upcoming header -->
+    <!-- CalendarView -->
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp" />
+        android:background="@android:color/white"
+        android:layout_marginBottom="16dp" />
 
+    <!-- Upcoming header -->
     <TextView
         android:id="@+id/tv_upcoming"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="UPCOMING"
+        android:text="UPCOMING EVENTS"
         android:textStyle="bold"
         android:gravity="center"
         android:background="#444444"
         android:textColor="@android:color/white"
         android:padding="10dp"
-        android:layout_marginTop="16dp" />
+        android:layout_marginBottom="8dp" />
 
-    <!-- Container for the events; has the exact id used in code -->
-    <LinearLayout
-        android:id="@+id/upcomingEvents"
+    <!-- Event container -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp"
-        android:background="#666666" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/upcomingEvents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp" />
+    </ScrollView>
 </LinearLayout>

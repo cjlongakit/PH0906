@@ -7,15 +7,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.ph906_spalshscreen.R;
+import com.example.ph906_spalshscreen.api.ApiClient;
+import com.example.ph906_spalshscreen.api.ApiCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ProfileFragment extends Fragment {
-
     private TextView tvFirstName, tvLastName, tvBirthdate, tvNickname, tvMobile,
             tvAddress, tvGuardian, tvGuardianMobile, tvBaptized, tvTeacher;
     private EditText etFirstName, etLastName, etBirthdate, etNickname, etMobile,
@@ -23,12 +28,15 @@ public class ProfileFragment extends Fragment {
     private Button btnEdit, btnSave, btnCancel;
 
     private boolean isEditing = false;
+    private ApiClient apiClient;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        apiClient = new ApiClient(requireContext());
 
         // Bind TextViews
         tvFirstName = root.findViewById(R.id.tv_first_name);
@@ -59,12 +67,48 @@ public class ProfileFragment extends Fragment {
         btnSave = root.findViewById(R.id.btnSave);
         btnCancel = root.findViewById(R.id.btnCancel);
 
-        // Set listeners
         btnEdit.setOnClickListener(v -> switchToEditMode());
         btnSave.setOnClickListener(v -> saveChanges());
         btnCancel.setOnClickListener(v -> cancelEditing());
 
+        // 🔹 Fetch profile from API when fragment opens
+        loadProfile();
+
         return root;
+    }
+
+    private void loadProfile() {
+        apiClient.getMyProfile(new ApiCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                if (getActivity() == null) return;
+
+                getActivity().runOnUiThread(() -> {
+                    JSONObject data = response.optJSONObject("data");
+                    if (data != null) {
+                        tvFirstName.setText(data.optString("first_name", ""));
+                        tvLastName.setText(data.optString("last_name", ""));
+                        tvBirthdate.setText(data.optString("birthday", ""));
+                        tvNickname.setText(data.optString("nickname", ""));
+                        tvMobile.setText(data.optString("mobile", ""));
+                        tvAddress.setText(data.optString("address", ""));
+                        tvGuardian.setText(data.optString("guardian_name", ""));
+                        tvGuardianMobile.setText(data.optString("guardian_mobile", ""));
+                        tvBaptized.setText("Water Baptized: " + data.optString("baptized", "No"));
+                        tvTeacher.setText(data.optString("teacher", ""));
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(getActivity(), "Profile load failed: " + errorMessage, Toast.LENGTH_SHORT).show()
+                    );
+                }
+            }
+        });
     }
 
     private void switchToEditMode() {
@@ -72,7 +116,6 @@ public class ProfileFragment extends Fragment {
         btnEdit.setVisibility(View.GONE);
         btnSave.setVisibility(View.VISIBLE);
         btnCancel.setVisibility(View.VISIBLE);
-
         toggleFields(true);
     }
 
@@ -81,12 +124,52 @@ public class ProfileFragment extends Fragment {
         btnEdit.setVisibility(View.VISIBLE);
         btnSave.setVisibility(View.GONE);
         btnCancel.setVisibility(View.GONE);
-
         toggleFields(false);
     }
 
     private void saveChanges() {
-        // Example: copy values from EditText to TextView
+        // Build payload
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("first_name", etFirstName.getText().toString());
+            payload.put("last_name", etLastName.getText().toString());
+            payload.put("birthday", etBirthdate.getText().toString());
+            payload.put("nickname", etNickname.getText().toString());
+            payload.put("mobile", etMobile.getText().toString());
+            payload.put("address", etAddress.getText().toString());
+            payload.put("guardian_name", etGuardian.getText().toString());
+            payload.put("guardian_mobile", etGuardianMobile.getText().toString());
+            payload.put("baptized", etBaptized.getText().toString());
+            payload.put("teacher", etTeacher.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        apiClient.updateMyProfile(payload, new ApiCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                if (getActivity() == null) return;
+
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getActivity(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                    // Update UI with new values
+                    saveToTextViews();
+                    cancelEditing();
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(getActivity(), "Update failed: " + errorMessage, Toast.LENGTH_SHORT).show()
+                    );
+                }
+            }
+        });
+    }
+
+    private void saveToTextViews() {
         tvFirstName.setText(etFirstName.getText().toString());
         tvLastName.setText(etLastName.getText().toString());
         tvBirthdate.setText(etBirthdate.getText().toString());
@@ -97,12 +180,9 @@ public class ProfileFragment extends Fragment {
         tvGuardianMobile.setText(etGuardianMobile.getText().toString());
         tvBaptized.setText("Water Baptized: " + etBaptized.getText().toString());
         tvTeacher.setText(etTeacher.getText().toString());
-
-        cancelEditing(); // switch back to view mode
     }
 
     private void toggleFields(boolean editable) {
-        // Show EditTexts in edit mode, show TextViews in view mode
         toggle(tvFirstName, etFirstName, editable);
         toggle(tvLastName, etLastName, editable);
         toggle(tvBirthdate, etBirthdate, editable);

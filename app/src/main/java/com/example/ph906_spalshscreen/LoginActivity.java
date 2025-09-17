@@ -4,107 +4,77 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.ph906_spalshscreen.models.LoginRequest;
-import com.example.ph906_spalshscreen.models.LoginResponse;
-import com.example.ph906_spalshscreen.network.ApiService;
+import com.example.ph906_spalshscreen.api.ApiClient;
+import com.example.ph906_spalshscreen.api.ApiCallback;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
-
-    private EditText etUsername, etPassword;
+    private EditText etPh906, etBirthday;
     private Button btnLogin;
-    private TextView tvForgot;
-
-    private PrefsHelper prefs;
-
-    private static final String BASE_URL = "https://hjcdc.swuitapp.com/"; // ✅ Your server
+    private ApiClient apiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_login); // make sure this matches your actual XML file name
 
-        prefs = new PrefsHelper(this);
+        etPh906 = findViewById(R.id.etPh906);       // Username (PH0906 ID)
+        etBirthday = findViewById(R.id.etBirthday); // Birthday (manual input: YYYY-MM-DD)
+        btnLogin = findViewById(R.id.btnLogin);     // Continue button
 
-        etUsername = findViewById(R.id.editTextText);
-        etPassword = findViewById(R.id.editTextTextPassword);
-        btnLogin = findViewById(R.id.button2);
-        tvForgot = findViewById(R.id.textView3);
+        apiClient = new ApiClient(this);
 
-        btnLogin.setOnClickListener(v -> attemptLogin());
-
-        tvForgot.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
-        });
-    }
-
-    private void attemptLogin() {
-        String username = etUsername.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter both username and password", Toast.LENGTH_SHORT).show();
+        // ✅ If already logged in, skip to Main
+        if (apiClient.isLoggedIn()) {
+            navigateToMain();
             return;
         }
 
-        // Logging for debugging
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(logging).build();
+        btnLogin.setOnClickListener(v -> attemptLogin());
+    }
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    private void attemptLogin() {
+        String ph906 = etPh906.getText().toString().trim();
+        String birthday = etBirthday.getText().toString().trim();
 
-        ApiService api = retrofit.create(ApiService.class);
+        if (ph906.isEmpty() || birthday.isEmpty()) {
+            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        LoginRequest body = new LoginRequest(username, password);
-        api.login(body).enqueue(new Callback<LoginResponse>() {
-            @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    LoginResponse lr = response.body();
-                    if ("success".equalsIgnoreCase(lr.status)) {
-                        // Save login info
-                        prefs.saveToken(lr.token);
-                        prefs.saveUsername(lr.username);
-                        prefs.saveAge(lr.age);
+        // ✅ Regex: must match YYYY-MM-DD (e.g. 2005-08-21)
+        if (!birthday.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            Toast.makeText(this, "Birthday must be in format YYYY-MM-DD", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-                        // Route based on age
-                        Intent intent = new Intent(LoginActivity.this, PrivacyActivity.class);
-                        if (lr.age < 18) {
-                            intent.putExtra("version", "minor");
-                        } else {
-                            intent.putExtra("version", "adult");
-                        }
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, lr.message, Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(LoginActivity.this, "Invalid response: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
+        btnLogin.setEnabled(false);
+        btnLogin.setText("Logging in...");
+
+        apiClient.studentLogin(ph906, birthday, new ApiCallback() {
+            @Override public void onSuccess(JSONObject response) {
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                    navigateToMain();
+                });
             }
-
-            @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            @Override public void onError(String error) {
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this, "Login failed: " + error, Toast.LENGTH_LONG).show();
+                    btnLogin.setEnabled(true);
+                    btnLogin.setText("Continue");
+                });
             }
         });
+    }
+
+    private void navigateToMain() {
+        startActivity(new Intent(this, MainActivity.class));
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        finish();
     }
 }

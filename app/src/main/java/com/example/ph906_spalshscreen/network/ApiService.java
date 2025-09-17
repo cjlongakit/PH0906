@@ -15,7 +15,7 @@ import retrofit2.http.POST;
 public interface ApiService {
 
     // 🔹 Login API
-    @POST("api/login.php")
+    @POST("api/api.php/login")
     Call<LoginResponse> login(@Body LoginRequest body);
 
     // 🔹 Fetch Masterlist (example)
