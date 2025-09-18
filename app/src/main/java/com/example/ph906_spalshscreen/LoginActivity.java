@@ -20,19 +20,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login); // make sure this matches your actual XML file name
+        setContentView(R.layout.activity_login);
 
-        etPh906 = findViewById(R.id.etPh906);       // Username (PH0906 ID)
-        etBirthday = findViewById(R.id.etBirthday); // Birthday (manual input: YYYY-MM-DD)
-        btnLogin = findViewById(R.id.btnLogin);     // Continue button
+        etPh906 = findViewById(R.id.etPh906);
+        etBirthday = findViewById(R.id.etBirthday);
+        btnLogin = findViewById(R.id.btnLogin);
 
         apiClient = new ApiClient(this);
-
-        // ✅ If already logged in, skip to Main
-        if (apiClient.isLoggedIn()) {
-            navigateToMain();
-            return;
-        }
 
         btnLogin.setOnClickListener(v -> attemptLogin());
     }
@@ -46,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // ✅ Regex: must match YYYY-MM-DD (e.g. 2005-08-21)
+        // Validate date format YYYY-MM-DD
         if (!birthday.matches("\\d{4}-\\d{2}-\\d{2}")) {
             Toast.makeText(this, "Birthday must be in format YYYY-MM-DD", Toast.LENGTH_LONG).show();
             return;
@@ -56,13 +50,28 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setText("Logging in...");
 
         apiClient.studentLogin(ph906, birthday, new ApiCallback() {
-            @Override public void onSuccess(JSONObject response) {
+            @Override
+            public void onSuccess(JSONObject response) {
                 runOnUiThread(() -> {
                     Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                    navigateToMain();
+
+                    // Save birthday for age check
+                    apiClient.saveBirthday(birthday);
+
+                    // Determine adult/minor
+                    boolean isAdult = apiClient.isAdult();
+                    String version = isAdult ? "adult" : "minor";
+
+                    // Go to TermsActivity
+                    Intent intent = new Intent(LoginActivity.this, TermsActivity.class);
+                    intent.putExtra("version", version);
+                    startActivity(intent);
+                    finish();
                 });
             }
-            @Override public void onError(String error) {
+
+            @Override
+            public void onError(String error) {
                 runOnUiThread(() -> {
                     Toast.makeText(LoginActivity.this, "Login failed: " + error, Toast.LENGTH_LONG).show();
                     btnLogin.setEnabled(true);
@@ -70,11 +79,5 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    private void navigateToMain() {
-        startActivity(new Intent(this, MainActivity.class));
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        finish();
     }
 }

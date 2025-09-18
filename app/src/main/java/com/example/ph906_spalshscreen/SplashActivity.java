@@ -3,20 +3,32 @@ package com.example.ph906_spalshscreen;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.ph906_spalshscreen.api.ApiClient;
 
 public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash); // Your splash XML (you’ll provide it)
+        setContentView(R.layout.activity_splash);
 
-        // Delay 2 seconds, then go to LoginActivity
         new Handler().postDelayed(() -> {
-            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finish(); // Close splash so user can’t go back to it
-        }, 2000); // 2000ms = 2 seconds
+            ApiClient apiClient = new ApiClient(this);
+            boolean isLoggedIn = apiClient.isLoggedIn();
+
+            Log.d("DEBUG", "SplashActivity: isLoggedIn = " + isLoggedIn);
+
+            if (isLoggedIn) {
+                Log.d("DEBUG", "Going to MainActivity");
+                startActivity(new Intent(this, MainActivity.class));
+            } else {
+                Log.d("DEBUG", "Going to LoginActivity");
+                startActivity(new Intent(this, LoginActivity.class));
+            }
+            finish();
+        }, 2000);
     }
 }

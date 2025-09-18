@@ -32,7 +32,7 @@ public class ApiClient {
 
             RequestBody body = RequestBody.create(JSON, json.toString());
             Request request = new Request.Builder()
-                    .url(BASE_URL + "/api.php/login")
+                    .url(BASE_URL + "/login.php")
                     .post(body)
                     .build();
 
@@ -51,6 +51,8 @@ public class ApiClient {
                                     jsonResponse.optString("name"),
                                     jsonResponse.optBoolean("is_default_password", true)
                             );
+                            // Save birthday from login input or API response
+                            saveBirthday(birthday);
                             callback.onSuccess(jsonResponse);
                         } else {
                             callback.onError(jsonResponse.optString("message", "Login failed"));
@@ -161,4 +163,39 @@ public class ApiClient {
     public boolean isDefaultPassword() { return prefs.getBoolean("is_default_password", true); }
     public boolean isLoggedIn() { return prefs.getBoolean("is_logged_in", false); }
     public void logout() { prefs.edit().clear().apply(); }
+
+    // ---- AGE & BIRTHDAY HELPERS ----
+    public void saveBirthday(String birthday) {
+        prefs.edit().putString("birthday", birthday).apply();
+    }
+
+    public String getBirthday() {
+        return prefs.getString("birthday", null);
+    }
+
+    public boolean isAdult() {
+        String birthday = getBirthday();
+        if (birthday == null) return false;
+
+        try {
+            String[] parts = birthday.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+            int day = Integer.parseInt(parts[2]);
+
+            java.util.Calendar dob = java.util.Calendar.getInstance();
+            dob.set(year, month - 1, day);
+
+            java.util.Calendar today = java.util.Calendar.getInstance();
+            int age = today.get(java.util.Calendar.YEAR) - dob.get(java.util.Calendar.YEAR);
+
+            if (today.get(java.util.Calendar.DAY_OF_YEAR) < dob.get(java.util.Calendar.DAY_OF_YEAR)) {
+                age--;
+            }
+
+            return age >= 18;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

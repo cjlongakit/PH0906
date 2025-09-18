@@ -19,24 +19,23 @@
         android:scaleType="centerCrop"
         android:clipToOutline="true" />
 
-    <!-- Name -->
-
-    <!-- Email / Subtext -->
+    <!-- Full Name -->
     <TextView
-        android:id="@+id/nav_header_name"
+        android:id="@+id/nav_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Rodney"
+        android:text="Full Name"
         android:textColor="#FFD700"
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <!-- Student ID -->
     <TextView
-        android:id="@+id/nav_header_email"
+        android:id="@+id/nav_student_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="rodney@example.com"
+        android:text="ID: 000"
         android:textColor="@android:color/white"
         android:textSize="14sp" />
 
