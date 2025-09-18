@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class ApiClient {
-    private static final String BASE_URL = "https://hjcdc.swuitapp.com/api";
+    private static final String BASE_URL = "https://hjcdc.swuitapp.com/api/api.php/login";
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private OkHttpClient client;
