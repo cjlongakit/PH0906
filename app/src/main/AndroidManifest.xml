@@ -1,44 +1,56 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Add permissions here -->
+    <!-- network permission if your API calls need Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PH906_spalshscreen"
         tools:targetApi="31">
 
-        <!-- Existing password reset flow -->
-        <activity android:name=".ForgotPasswordActivity" android:exported="false" />
-        <activity android:name=".OtpVerificationActivity" android:exported="false" />
-        <activity android:name=".ResetPasswordActivity" android:exported="false" />
-
-        <!-- Nav Menu (not an activity, consider removing if unused) -->
-        <activity android:name=".nav_menu" android:exported="false" />
-
-        <!-- Core app screens -->
-        <activity android:name=".LoginActivity" android:exported="false" />
-        <activity android:name=".MainActivity" android:exported="false" />
-
-        <!-- Newly added screens -->
-        <activity android:name=".ChangePasswordActivity" android:exported="false" />
-        <activity android:name=".ProfileActivity" android:exported="false" />
-        <activity android:name=".EventsActivity" android:exported="false" />
-
-        <!-- Splash screen is still the launcher -->
-        <activity android:name=".SplashActivity" android:exported="true">
+        <!-- Always land here first -->
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Login screen -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <!-- Main dashboard -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- Terms & Agreements: no history so user can’t back-nav here -->
+        <activity
+            android:name=".TermsActivity"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
+        <!-- Privacy Policy: same as Terms -->
+        <activity
+            android:name=".PrivacyActivity"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
+        <!-- Your existing ForgotPasswordActivity, etc. -->
+        <activity android:name=".ForgotPasswordActivity" />
+
 
     </application>
 </manifest>

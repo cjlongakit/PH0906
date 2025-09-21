@@ -16,19 +16,43 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         new Handler().postDelayed(() -> {
-            ApiClient apiClient = new ApiClient(this);
-            boolean isLoggedIn = apiClient.isLoggedIn();
+            ApiClient apiClient = new ApiClient(SplashActivity.this);
+            PrefManager pref = new PrefManager(SplashActivity.this);
 
+            boolean isLoggedIn = apiClient.isLoggedIn();
             Log.d("DEBUG", "SplashActivity: isLoggedIn = " + isLoggedIn);
 
-            if (isLoggedIn) {
-                Log.d("DEBUG", "Going to MainActivity");
-                startActivity(new Intent(this, MainActivity.class));
-            } else {
+            if (!isLoggedIn) {
                 Log.d("DEBUG", "Going to LoginActivity");
-                startActivity(new Intent(this, LoginActivity.class));
+                Intent loginIntent = new Intent(SplashActivity.this, LoginActivity.class);
+                loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(loginIntent);
+                finish();
+                return;
             }
+
+            // Get saved version: "minor" or "adult"
+            String version = apiClient.getSavedVersion();
+
+            Intent nextIntent;
+            if (!pref.isTermsAccepted(version)) {
+                Log.d("DEBUG", "Going to TermsActivity");
+                nextIntent = new Intent(SplashActivity.this, TermsActivity.class)
+                        .putExtra("version", version);
+            } else if (!pref.isPrivacyAccepted(version)) {
+                Log.d("DEBUG", "Going to PrivacyActivity");
+                nextIntent = new Intent(SplashActivity.this, PrivacyActivity.class)
+                        .putExtra("version", version);
+            } else {
+                Log.d("DEBUG", "Going to MainActivity");
+                nextIntent = new Intent(SplashActivity.this, MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            }
+
+            nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(nextIntent);
             finish();
-        }, 2000);
+
+        }, 2000); // 2-second splash delay
     }
 }

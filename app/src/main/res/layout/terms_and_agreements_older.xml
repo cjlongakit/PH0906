@@ -58,7 +58,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="\nTerms And Agreements"
+                android:text="\nTerms And Agreements (Adult)"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 android:textSize="20sp"
@@ -100,7 +100,7 @@ Welcome to Hello, PH0906! You’re now an adult and can manage your own data. By
 
     <!-- Accept Button -->
     <Button
-        android:id="@+id/btnAccept"
+        android:id="@+id/btnAgree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="I Agree To All The Terms And Agreements"

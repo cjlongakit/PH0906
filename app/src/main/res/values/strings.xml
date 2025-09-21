@@ -2,10 +2,16 @@
     <string name="dashboard">DASHBOARD</string>
     <string name="letters">LETTERS</string>
     <string name="username">Rodney</string>
+    <string name="app_name">HJCDC</string>
     <string name="back_button_desc">Back</string>
     <string name="menu_button_desc">Menu</string>
     <string name="profile_picture_desc">Profile picture</string>
-    <string name="app_name">PH906 Splashscreen</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <!-- Terms & Service -->
+    <string name="terms_adult">Full Terms &amp; Service for adults…</string>
+    <string name="terms_minor">Simplified Terms for minors…</string>
+    <!-- Privacy Policy -->
+    <string name="privacy_adult">Privacy Policy (Adult) …</string><string name="privacy_minor">Privacy Policy (Minor) …</string>
+
 </resources>

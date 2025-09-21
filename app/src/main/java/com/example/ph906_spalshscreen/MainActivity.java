@@ -4,21 +4,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
+
 import com.example.ph906_spalshscreen.api.ApiClient;
+import com.example.ph906_spalshscreen.ui.about.AboutFragment;
 import com.example.ph906_spalshscreen.ui.home.HomeFragment;
 import com.example.ph906_spalshscreen.ui.profile.ProfileFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
     private ApiClient apiClient;
 
     @Override
@@ -27,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         apiClient = new ApiClient(this);
 
-        // Check if user is logged in FIRST
+        // Check login status first
         if (!apiClient.isLoggedIn()) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
@@ -36,82 +39,97 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setContentView(R.layout.activity_main);
 
-        setupNavigation();
-        updateHeaderInfo();
+        // Hide the default ActionBar completely
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
-        // Load home fragment by default
+        // Setup Drawer Layout & NavigationView
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Setup manual hamburger button click
+        ImageView hamburgerMenu = findViewById(R.id.hamburger_menu);
+        hamburgerMenu.setOnClickListener(v -> {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+        // Update navigation header with user info
+        updateNavigationHeader();
+
+        // Default fragment when app starts
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment());
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new HomeFragment())
+                    .commit();
+            navigationView.setCheckedItem(R.id.nav_home);
         }
     }
 
-    private void setupNavigation() {
-        // Setup toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+    private void updateNavigationHeader() {
+        // Get the values from ApiClient
+        boolean isLoggedIn = apiClient.isLoggedIn();
+        String fullName = apiClient.getFullName();
+        String studentId = apiClient.getLoggedInStudentId();
 
-        // Setup drawer
-        drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        android.util.Log.d("DEBUG", "=== Navigation Header Debug ===");
+        android.util.Log.d("DEBUG", "Is logged in: " + isLoggedIn);
+        android.util.Log.d("DEBUG", "Full name: '" + fullName + "'");
+        android.util.Log.d("DEBUG", "Student ID: '" + studentId + "'");
 
-        // Setup drawer toggle (hamburger menu)
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-    }
-
-    private void updateHeaderInfo() {
-        NavigationView navigationView = findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
-
         TextView tvName = headerView.findViewById(R.id.nav_username);
         TextView tvStudentId = headerView.findViewById(R.id.nav_student_id);
 
-        tvName.setText(apiClient.getFullName());
-        tvStudentId.setText("ID: " + apiClient.getLoggedInStudentId());
+        android.util.Log.d("DEBUG", "tvName found: " + (tvName != null));
+        android.util.Log.d("DEBUG", "tvStudentId found: " + (tvStudentId != null));
+
+        if (tvName != null) {
+            tvName.setText(fullName.isEmpty() ? "No Name" : fullName);
+            android.util.Log.d("DEBUG", "Set name to: " + fullName);
+        }
+        if (tvStudentId != null) {
+            tvStudentId.setText(studentId == null ? "No ID" : "ID: " + studentId);
+            android.util.Log.d("DEBUG", "Set ID to: " + studentId);
+        }
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        Fragment fragment = null;
-
         if (id == R.id.nav_home) {
-            fragment = new HomeFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new HomeFragment())
+                    .commit();
         } else if (id == R.id.nav_profile) {
-            fragment = new ProfileFragment();
-        } else if (id == R.id.nav_events) {
-            startActivity(new Intent(this, EventsActivity.class));
-        } else if (id == R.id.nav_settings) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new ProfileFragment())
+                    .commit();
+        } else if (id == R.id.nav_change_password) {
             startActivity(new Intent(this, ChangePasswordActivity.class));
+        } else if (id == R.id.nav_about) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new AboutFragment())
+                    .commit();
         } else if (id == R.id.nav_logout) {
-            logout();
-            return true;
-        }
-
-        if (fragment != null) {
-            loadFragment(fragment);
+            logoutUser();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
-    }
-
-    private void logout() {
+    private void logoutUser() {
         apiClient.logout();
-        startActivity(new Intent(this, LoginActivity.class));
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
         finish();
     }
 

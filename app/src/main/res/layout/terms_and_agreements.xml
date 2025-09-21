@@ -100,7 +100,7 @@ Welcome to Hello, PH0906! This app helps you manage your child’s school and pe
 
     <!-- Accept Button -->
     <Button
-        android:id="@+id/btnAcceptParent"
+        android:id="@+id/btnAgree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="I Agree To All The Terms And Agreements"

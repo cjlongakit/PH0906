@@ -1,60 +1,165 @@
 package com.example.ph906_spalshscreen;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ph906_spalshscreen.R;
+import com.example.ph906_spalshscreen.api.ApiClient;
+import com.example.ph906_spalshscreen.api.ApiCallback;
+import com.example.ph906_spalshscreen.ui.letters.Letter;
+import com.example.ph906_spalshscreen.ui.letters.LettersAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LettersFragment extends Fragment {
 
-    private TableLayout tableLetters;
+    private EditText etSearch;
+    private Button btnFilter;
+    private RecyclerView recyclerViewLetters;
+    private LettersAdapter adapter;
+    private ApiClient apiClient;
 
-    @Nullable
+    private List<Letter> allLetters = new ArrayList<>();
+    private List<Letter> filteredLetters = new ArrayList<>();
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_letters, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_letters, container, false);
 
-        tableLetters = root.findViewById(R.id.tableLetters);
+        initViews(view);
+        setupRecyclerView();
+        setupListeners();
 
-        // 🔹 Later replace this with backend API call
-        addRow("001", "Rodney Galanida", "General", "Outdated");
-        addRow("002", "Rodney Galanida", "General", "Turned In");
-        addRow("007", "Rodney Galanida", "General", "Pending");
+        apiClient = new ApiClient(getContext());
+        loadLettersFromDatabase();
 
-        return root;
+        return view;
     }
 
-    private void addRow(String code, String name, String type, String status) {
-        TableRow row = new TableRow(getContext());
+    private void initViews(View view) {
+        etSearch = view.findViewById(R.id.etSearch);
+        btnFilter = view.findViewById(R.id.btnFilter);
+        recyclerViewLetters = view.findViewById(R.id.recyclerViewLetters);
+    }
 
-        TextView tvCode = new TextView(getContext());
-        tvCode.setText(code);
-        row.addView(tvCode);
+    private void setupRecyclerView() {
+        adapter = new LettersAdapter(filteredLetters);
+        recyclerViewLetters.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerViewLetters.setAdapter(adapter);
+    }
 
-        TextView tvName = new TextView(getContext());
-        tvName.setText(name);
-        row.addView(tvName);
+    private void setupListeners() {
+        // Search functionality
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        TextView tvType = new TextView(getContext());
-        tvType.setText(type);
-        row.addView(tvType);
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterLetters(s.toString());
+            }
 
-        TextView tvStatus = new TextView(getContext());
-        tvStatus.setText(status);
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
-        // 🔹 Just plain text for now (since backend controls status)
-        row.addView(tvStatus);
+        // Filter button
+        btnFilter.setOnClickListener(v -> showFilterDialog());
+    }
 
-        tableLetters.addView(row);
+    private void loadLettersFromDatabase() {
+        // Call your API to get students data
+        // This will fetch from your 'students' table which contains letters/documents for students
+
+        // Create a custom API call for getting letters/students data
+        apiClient.getStudentsData(new ApiCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        try {
+                            parseLettersData(response);
+                        } catch (Exception e) {
+                            Toast.makeText(getContext(), "Error parsing data: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        Toast.makeText(getContext(), "Error loading letters: " + error,
+                                Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
+    }
+
+    private void parseLettersData(JSONObject response) throws Exception {
+        allLetters.clear();
+
+        if (response.has("data")) {
+            JSONArray dataArray = response.getJSONArray("data");
+
+            for (int i = 0; i < dataArray.length(); i++) {
+                JSONObject studentObj = dataArray.getJSONObject(i);
+
+                // Parse data from your 'students' table
+                String ph906 = studentObj.optString("ph906");
+                String name = studentObj.optString("name");
+                String address = studentObj.optString("address");
+                String type = studentObj.optString("type");
+                String status = studentObj.optString("status");
+
+                // Create Letter object from database data
+                Letter letter = new Letter(ph906, "", name, address, type, status);
+                allLetters.add(letter);
+            }
+        }
+
+        filteredLetters.clear();
+        filteredLetters.addAll(allLetters);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void filterLetters(String query) {
+        filteredLetters.clear();
+
+        if (query.isEmpty()) {
+            filteredLetters.addAll(allLetters);
+        } else {
+            String lowerQuery = query.toLowerCase();
+            for (Letter letter : allLetters) {
+                if (letter.getPh906().toLowerCase().contains(lowerQuery) ||
+                        letter.getFullName().toLowerCase().contains(lowerQuery) ||
+                        letter.getStatus().toLowerCase().contains(lowerQuery)) {
+                    filteredLetters.add(letter);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
+    private void showFilterDialog() {
+        Toast.makeText(getContext(), "Filter options coming soon", Toast.LENGTH_SHORT).show();
     }
 }
