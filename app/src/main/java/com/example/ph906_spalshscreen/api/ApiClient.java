@@ -2,45 +2,32 @@ package com.example.ph906_spalshscreen.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.*;
-
-/* ============================================================
- * ApiClient.java
- * ------------------------------------------------------------
- * Handles all API calls for PH906 app, including:
- * 1. Student Login
- * 2. Change Password
- * 3. Profile retrieval and update
- * 4. Events retrieval
- * 5. Local session storage (token, birthday, version)
- * ------------------------------------------------------------
- * Uses: OkHttp3 for network calls, SharedPreferences for local storage
- * ============================================================ */
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ApiClient {
 
-    // ==============================
-    // Constants
-    // ==============================
-    private static final String BASE_URL = "https://hjcdc.swuitapp.com/api/api.php"; // Base API URL
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8"); // Media type for JSON requests
+    private static final String BASE_URL = "https://hjcdc.swuitapp.com/api/api.php";
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    // ==============================
-    // Members
-    // ==============================
-    private OkHttpClient client;             // OkHttp client
-    private SharedPreferences prefs;         // SharedPreferences for storing session info
+    private OkHttpClient client;
+    private SharedPreferences prefs;
 
-    // ==============================
-    // Constructor
-    // ==============================
     public ApiClient(Context context) {
         client = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
@@ -49,26 +36,23 @@ public class ApiClient {
 
         prefs = context.getSharedPreferences("student_prefs", Context.MODE_PRIVATE);
     }
-
     // ==============================
-    // STUDENT LOGIN
+    // STUDENT LOGIN (use this one)
     // ==============================
-    /**
-     * Logs in a student with username (ph906) and birthday
-     */
     public void studentLogin(String ph906, String birthday, ApiCallback callback) {
         try {
             JSONObject json = new JSONObject();
-            json.put("username", ph906);
-            json.put("password", birthday);
+            json.put("ph906", ph906);
+            json.put("birthday", birthday);
 
             RequestBody body = RequestBody.create(JSON, json.toString());
             Request request = new Request.Builder()
-                    .url(BASE_URL + "/student_login")  // Fixed endpoint
+                    .url("https://hjcdc.swuitapp.com/api/login.php") // ✅ confirmed endpoint
+                    .addHeader("Accept", "application/json")
                     .post(body)
                     .build();
 
-            client.newCall(request).enqueue(new okhttp3.Callback() {
+            client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callback.onError("Network error: " + e.getMessage());
@@ -80,24 +64,22 @@ public class ApiClient {
                     try {
                         JSONObject jsonResponse = new JSONObject(responseBody);
                         if ("success".equals(jsonResponse.optString("status"))) {
-
-                            // Determine version based on age
                             boolean adult = isAdultFromBirthday(jsonResponse.optString("birthday", birthday));
                             String version = adult ? "adult" : "minor";
 
-                            // Save info
                             saveLoginInfo(
                                     jsonResponse.optString("ph906"),
                                     jsonResponse.optString("token"),
-                                    jsonResponse.optString("full_name"),  // Fixed field name
+                                    jsonResponse.optString("first_name", "") + " " + jsonResponse.optString("last_name", ""),
                                     jsonResponse.optBoolean("is_default_password", true)
                             );
+
                             saveBirthday(jsonResponse.optString("birthday", birthday));
-                            saveVersion(version); // <-- Save version
+                            saveVersion(version);
 
                             callback.onSuccess(jsonResponse);
                         } else {
-                            callback.onError(jsonResponse.optString("message", "Login failed"));
+                            callback.onError("Login failed: " + jsonResponse.optString("message", "Login failed"));
                         }
                     } catch (JSONException e) {
                         callback.onError("JSON parsing error: " + e.getMessage());
@@ -110,11 +92,51 @@ public class ApiClient {
     }
 
     // ==============================
+    // MASTERLIST DATA
+    // ==============================
+    public void getMasterlist(ApiCallback callback) {
+        String token = getToken();
+        if (token == null) {
+            callback.onError("Not logged in");
+            return;
+        }
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/masterlist")
+                .addHeader("Authorization", token)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onError("Network error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("API_DEBUG", "Masterlist response: " + responseBody);
+
+                try {
+                    if (responseBody.trim().startsWith("[")) {
+                        JSONObject wrapper = new JSONObject();
+                        wrapper.put("data", new JSONArray(responseBody));
+                        callback.onSuccess(wrapper);
+                    } else {
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+                        callback.onSuccess(jsonResponse);
+                    }
+                } catch (JSONException e) {
+                    callback.onError("JSON parsing error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    // ==============================
     // CHANGE PASSWORD
     // ==============================
-    /**
-     * Changes the logged-in student's password
-     */
     public void changePassword(String currentPassword, String newPassword, ApiCallback callback) {
         String token = getToken();
         if (token == null) {
@@ -134,7 +156,7 @@ public class ApiClient {
                     .post(body)
                     .build();
 
-            client.newCall(request).enqueue(new okhttp3.Callback() {
+            client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callback.onError("Network error: " + e.getMessage());
@@ -162,7 +184,7 @@ public class ApiClient {
     }
 
     // ==============================
-    // PROFILE
+    // PROFILE & EVENTS
     // ==============================
     public void getMyProfile(ApiCallback callback) {
         requestWithToken("/my_profile", "GET", null, callback);
@@ -172,57 +194,8 @@ public class ApiClient {
         requestWithToken("/my_profile", "PUT", payload, callback);
     }
 
-    // ==============================
-    // EVENTS
-    // ==============================
     public void getUpcomingEvents(ApiCallback callback) {
         requestWithToken("/my_events", "GET", null, callback);
-    }
-
-    // ==============================
-    // STUDENTS/LETTERS DATA
-    // ==============================
-    /**
-     * Gets students data for Letters section - fetches from 'students' table
-     */
-    public void getStudentsData(ApiCallback callback) {
-        String token = getToken();
-        if (token == null) {
-            callback.onError("Not logged in");
-            return;
-        }
-
-        Request request = new Request.Builder()
-                .url(BASE_URL + "/students")
-                .addHeader("Authorization", token)
-                .get()
-                .build();
-
-        client.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onError("Network error: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
-
-                android.util.Log.d("API_DEBUG", "Students response: " + responseBody);
-
-                try {
-                    JSONObject jsonResponse = new JSONObject(responseBody);
-                    // Handle both array response and object response with data field
-                    if (jsonResponse.has("data") || jsonResponse instanceof JSONObject) {
-                        callback.onSuccess(jsonResponse);
-                    } else {
-                        callback.onError("No data found");
-                    }
-                } catch (JSONException e) {
-                    callback.onError("JSON parsing error: " + e.getMessage());
-                }
-            }
-        });
     }
 
     // ==============================
@@ -248,7 +221,7 @@ public class ApiClient {
             builder.get();
         }
 
-        client.newCall(builder.build()).enqueue(new okhttp3.Callback() {
+        client.newCall(builder.build()).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 callback.onError("Network error: " + e.getMessage());
@@ -294,9 +267,6 @@ public class ApiClient {
     public void saveBirthday(String birthday) { prefs.edit().putString("birthday", birthday).apply(); }
     public String getBirthday() { return prefs.getString("birthday", null); }
 
-    // ==============================
-    // VERSION STORAGE
-    // ==============================
     public void saveVersion(String version) { prefs.edit().putString("version", version).apply(); }
     public String getSavedVersion() { return prefs.getString("version", null); }
 
@@ -316,12 +286,12 @@ public class ApiClient {
             int month = Integer.parseInt(parts[1]);
             int day = Integer.parseInt(parts[2]);
 
-            java.util.Calendar dob = java.util.Calendar.getInstance();
+            Calendar dob = Calendar.getInstance();
             dob.set(year, month - 1, day);
 
-            java.util.Calendar today = java.util.Calendar.getInstance();
-            int age = today.get(java.util.Calendar.YEAR) - dob.get(java.util.Calendar.YEAR);
-            if (today.get(java.util.Calendar.DAY_OF_YEAR) < dob.get(java.util.Calendar.DAY_OF_YEAR)) age--;
+            Calendar today = Calendar.getInstance();
+            int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+            if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) age--;
 
             return age >= 18;
         } catch (Exception e) {

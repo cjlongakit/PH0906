@@ -5,100 +5,71 @@
     android:orientation="vertical"
     android:background="#1a1a1a">
 
-    <!-- Header with Search and Filter -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="12dp"
         android:background="#2a2a2a">
 
-        <!-- Search Box -->
         <EditText
             android:id="@+id/etSearch"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:background="@drawable/search_background"
-            android:hint="Search"
+            android:hint="Search by ID or name"
             android:textColor="@android:color/white"
             android:textColorHint="#888888"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_marginEnd="12dp" />
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginEnd="8dp" />
 
-        <!-- Filter Button -->
         <Button
             android:id="@+id/btnFilter"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/filter_button_background"
             android:text="⚙"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
-    <!-- Table Header -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:scrollbars="none"
+        android:background="#1a1a1a">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/btnAll" android:layout_marginEnd="8dp" android:layout_width="wrap_content" android:layout_height="40dp" android:text="ALL"/>
+            <Button android:id="@+id/btnPending" android:layout_marginEnd="8dp" android:layout_width="wrap_content" android:layout_height="40dp" android:text="PENDING"/>
+            <Button android:id="@+id/btnOnHand" android:layout_marginEnd="8dp" android:layout_width="wrap_content" android:layout_height="40dp" android:text="ON HAND"/>
+            <Button android:id="@+id/btnTurnedIn" android:layout_marginEnd="8dp" android:layout_width="wrap_content" android:layout_height="40dp" android:text="TURNED IN"/>
+            <Button android:id="@+id/btnTurnInLate" android:layout_marginEnd="8dp" android:layout_width="wrap_content" android:layout_height="40dp" android:text="TURN IN LATE"/>
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:background="#3a3a3a"
-        android:padding="12dp">
+        android:padding="12dp"
+        android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:text="PH906"
-            android:textColor="#4CAF50"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="NAME"
-            android:textColor="#4CAF50"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="ADDRESS"
-            android:textColor="#4CAF50"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:text="TYPE"
-            android:textColor="#4CAF50"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:text="STATUS"
-            android:textColor="#4CAF50"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-
+        <TextView android:layout_width="0dp" android:layout_weight="1.2" android:layout_height="wrap_content" android:text="PH906" android:textColor="#4CAF50" android:textStyle="bold"/>
+        <TextView android:layout_width="0dp" android:layout_weight="2.2" android:layout_height="wrap_content" android:text="NAME" android:textColor="#4CAF50" android:textStyle="bold"/>
+        <TextView android:layout_width="0dp" android:layout_weight="2" android:layout_height="wrap_content" android:text="ADDRESS" android:textColor="#4CAF50" android:textStyle="bold"/>
+        <TextView android:layout_width="0dp" android:layout_weight="1.2" android:layout_height="wrap_content" android:text="TYPE" android:textColor="#4CAF50" android:textStyle="bold"/>
+        <TextView android:layout_width="0dp" android:layout_weight="1.2" android:layout_height="wrap_content" android:text="STATUS" android:textColor="#4CAF50" android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- RecyclerView for Letters Data -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewLetters"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#1a1a1a" />
-
+        android:layout_height="match_parent"/>
 </LinearLayout>

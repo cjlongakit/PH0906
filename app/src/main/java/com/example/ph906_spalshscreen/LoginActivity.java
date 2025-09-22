@@ -2,6 +2,7 @@ package com.example.ph906_spalshscreen;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -9,8 +10,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.ph906_spalshscreen.api.ApiCallback;
 import com.example.ph906_spalshscreen.api.ApiClient;
+import com.example.ph906_spalshscreen.api.ApiCallback;
 
 import org.json.JSONObject;
 
@@ -20,6 +21,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private TextView tvForgotPassword;
     private ApiClient apiClient;
+
+    private static final String TAG = "LOGIN_DEBUG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +36,9 @@ public class LoginActivity extends AppCompatActivity {
 
         apiClient = new ApiClient(this);
 
-        // If already logged in, skip login → goNext handles Terms/Privacy check
+        // Already logged in? -> skip to next screen
         if (apiClient.isLoggedIn()) {
-            // Retrieve saved version if already logged in
-            String savedVersion = apiClient.getSavedVersion(); // implement in ApiClient // "minor" or "adult"
+            String savedVersion = apiClient.getSavedVersion();
             goNext(savedVersion);
             return;
         }
@@ -46,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
             String birthday = etBirthday.getText().toString().trim();
 
             if (username.isEmpty() || birthday.isEmpty()) {
-                Toast.makeText(this, "Please enter both username and birthday", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please enter both student ID and birthday", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -56,23 +58,16 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(JSONObject response) {
                     runOnUiThread(() -> {
-                        android.util.Log.d("DEBUG", "=== Login Success Debug ===");
-                        android.util.Log.d("DEBUG", "Response: " + response.toString());
-                        android.util.Log.d("DEBUG", "Stored name: " + apiClient.getFullName());
-                        android.util.Log.d("DEBUG", "Stored ID: " + apiClient.getLoggedInStudentId());
+                        Log.d(TAG, "=== Login Success ===");
+                        Log.d(TAG, "Full Response: " + response.toString());
+                        Log.d(TAG, "Stored Name: " + apiClient.getFullName());
+                        Log.d(TAG, "Stored ID: " + apiClient.getLoggedInStudentId());
+                        Log.d(TAG, "Stored Version: " + apiClient.getSavedVersion());
 
                         btnLogin.setEnabled(true);
                         Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
 
-                        // Extract version from API response
-                        String version = "minor"; // default
-                        if (response.has("student")) {
-                            version = response.optJSONObject("student").optString("version", "minor");
-                        }
-
-                        // Save version locally in ApiClient for future logins
-                        apiClient.saveVersion(version);
-
+                        String version = apiClient.getSavedVersion();
                         goNext(version);
                     });
                 }
@@ -81,7 +76,9 @@ public class LoginActivity extends AppCompatActivity {
                 public void onError(String errorMessage) {
                     runOnUiThread(() -> {
                         btnLogin.setEnabled(true);
-                        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "=== Login Failed ===");
+                        Log.e(TAG, "Error Message: " + errorMessage);
+                        Toast.makeText(LoginActivity.this, "Login failed: " + errorMessage, Toast.LENGTH_LONG).show();
                     });
                 }
             });
