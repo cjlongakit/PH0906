@@ -24,7 +24,7 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
     @Override
     public LetterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.letter_item, parent, false); // Change from item_letter to letter_item
+                .inflate(R.layout.letter_item, parent, false);
         return new LetterViewHolder(view);
     }
 
@@ -35,7 +35,7 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
         holder.tvFullName.setText(letter.getFullName());
         holder.tvAddress.setText(letter.getAddress());
         holder.tvType.setText(letter.getType());
-        holder.tvStatus.setText(letter.getStatus()); // Remove deadline for now since table doesn't match
+        holder.tvStatus.setText(letter.getStatus());
     }
 
     @Override
@@ -44,12 +44,12 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
     }
 
     static class LetterViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPh906, tvFullName, tvAddress, tvType, tvStatus; // Remove tvDeadline
+        TextView tvPh906, tvFullName, tvAddress, tvType, tvStatus;
 
         public LetterViewHolder(@NonNull View itemView) {
             super(itemView);
             tvPh906 = itemView.findViewById(R.id.tvPh906);
-            tvFullName = itemView.findViewById(R.id.tvName); // Change from tvFullName to tvName
+            tvFullName = itemView.findViewById(R.id.tvName);
             tvAddress = itemView.findViewById(R.id.tvAddress);
             tvType = itemView.findViewById(R.id.tvType);
             tvStatus = itemView.findViewById(R.id.tvStatus);

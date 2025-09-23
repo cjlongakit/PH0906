@@ -71,7 +71,7 @@ public class ProfileFragment extends Fragment {
         btnSave.setOnClickListener(v -> saveChanges());
         btnCancel.setOnClickListener(v -> cancelEditing());
 
-        // 🔹 Fetch profile from API when fragment opens
+        // Fetch profile when fragment loads
         loadProfile();
 
         return root;
@@ -84,19 +84,24 @@ public class ProfileFragment extends Fragment {
                 if (getActivity() == null) return;
 
                 getActivity().runOnUiThread(() -> {
-                    JSONObject data = response.optJSONObject("data");
-                    if (data != null) {
-                        tvFirstName.setText(data.optString("first_name", ""));
-                        tvLastName.setText(data.optString("last_name", ""));
-                        tvBirthdate.setText(data.optString("birthday", ""));
-                        tvNickname.setText(data.optString("nickname", ""));
-                        tvMobile.setText(data.optString("mobile", ""));
-                        tvAddress.setText(data.optString("address", ""));
-                        tvGuardian.setText(data.optString("guardian_name", ""));
-                        tvGuardianMobile.setText(data.optString("guardian_mobile", ""));
-                        tvBaptized.setText("Water Baptized: " + data.optString("baptized", "No"));
-                        tvTeacher.setText(data.optString("teacher", ""));
+                    if (response.optBoolean("success")) {
+                        JSONObject data = response.optJSONObject("data");
+                        if (data != null) {
+                            tvFirstName.setText(data.optString("first_name", ""));
+                            tvLastName.setText(data.optString("last_name", ""));
+                            tvBirthdate.setText(data.optString("birthday", ""));
+                            tvNickname.setText(data.optString("nickname", ""));
+                            tvMobile.setText(data.optString("mobile", ""));
+                            tvAddress.setText(data.optString("address", ""));
+                            tvGuardian.setText(data.optString("guardian_name", ""));
+                            tvGuardianMobile.setText(data.optString("guardian_mobile", ""));
+                            tvBaptized.setText("Water Baptized: " + data.optString("baptized", "No"));
+                            tvTeacher.setText(data.optString("teacher", ""));
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), response.optString("message", "Failed to load profile"), Toast.LENGTH_SHORT).show();
                     }
+
                 });
             }
 
@@ -128,7 +133,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void saveChanges() {
-        // Build payload
         JSONObject payload = new JSONObject();
         try {
             payload.put("first_name", etFirstName.getText().toString());
@@ -152,7 +156,6 @@ public class ProfileFragment extends Fragment {
 
                 getActivity().runOnUiThread(() -> {
                     Toast.makeText(getActivity(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                    // Update UI with new values
                     saveToTextViews();
                     cancelEditing();
                 });
@@ -197,7 +200,7 @@ public class ProfileFragment extends Fragment {
 
     private void toggle(TextView tv, EditText et, boolean editable) {
         if (editable) {
-            et.setText(tv.getText().toString());
+            et.setText(tv.getText().toString().replace("Water Baptized: ", ""));
             tv.setVisibility(View.GONE);
             et.setVisibility(View.VISIBLE);
         } else {

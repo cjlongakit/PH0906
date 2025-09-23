@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class PrefsHelper {
-    private static final String PREF_NAME = "UserPrefs";
+    private static final String PREF_NAME = "student_prefs"; // unified name
 
     private static final String KEY_TOKEN = "token";
     private static final String KEY_PH906 = "ph906";
@@ -12,9 +12,10 @@ public class PrefsHelper {
     private static final String KEY_BIRTHDAY = "birthday";
     private static final String KEY_VERSION = "version"; // minor/adult
     private static final String KEY_IS_DEFAULT_PASSWORD = "is_default_password";
+    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
 
-    private SharedPreferences prefs;
-    private SharedPreferences.Editor editor;
+    private final SharedPreferences prefs;
+    private final SharedPreferences.Editor editor;
 
     public PrefsHelper(Context context) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -27,6 +28,7 @@ public class PrefsHelper {
         editor.putString(KEY_TOKEN, token);
         editor.putString(KEY_FULL_NAME, fullName);
         editor.putBoolean(KEY_IS_DEFAULT_PASSWORD, isDefaultPassword);
+        editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.apply();
     }
 
@@ -50,7 +52,7 @@ public class PrefsHelper {
     }
 
     public String getFullName() {
-        return prefs.getString(KEY_FULL_NAME, null);
+        return prefs.getString(KEY_FULL_NAME, "");
     }
 
     public boolean isDefaultPassword() {
@@ -67,7 +69,7 @@ public class PrefsHelper {
 
     // ===== Session check =====
     public boolean isLoggedIn() {
-        return getToken() != null && getPh906() != null;
+        return prefs.getBoolean(KEY_IS_LOGGED_IN, false);
     }
 
     public void clearAll() {

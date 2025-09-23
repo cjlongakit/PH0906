@@ -11,7 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ph906_spalshscreen.api.ApiClient;
-import com.example.ph906_spalshscreen.api.ApiCallback;
+import com.example.ph906_spalshscreen.api.ApiClient.ApiCallback;
 
 import org.json.JSONObject;
 
@@ -21,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private TextView tvForgotPassword;
     private ApiClient apiClient;
+    private PrefsHelper prefs; // use PrefsHelper
 
     private static final String TAG = "LOGIN_DEBUG";
 
@@ -35,10 +36,11 @@ public class LoginActivity extends AppCompatActivity {
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
 
         apiClient = new ApiClient(this);
+        prefs = new PrefsHelper(this);
 
         // Already logged in? -> skip to next screen
-        if (apiClient.isLoggedIn()) {
-            String savedVersion = apiClient.getSavedVersion();
+        if (prefs.isLoggedIn()) {
+            String savedVersion = prefs.getVersion();
             goNext(savedVersion);
             return;
         }
@@ -60,14 +62,16 @@ public class LoginActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         Log.d(TAG, "=== Login Success ===");
                         Log.d(TAG, "Full Response: " + response.toString());
-                        Log.d(TAG, "Stored Name: " + apiClient.getFullName());
-                        Log.d(TAG, "Stored ID: " + apiClient.getLoggedInStudentId());
-                        Log.d(TAG, "Stored Version: " + apiClient.getSavedVersion());
+
+                        // read stored info from PrefsHelper
+                        Log.d(TAG, "Stored Name: " + prefs.getFullName());
+                        Log.d(TAG, "Stored ID: " + prefs.getPh906());
+                        Log.d(TAG, "Stored Version: " + prefs.getVersion());
 
                         btnLogin.setEnabled(true);
                         Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
 
-                        String version = apiClient.getSavedVersion();
+                        String version = prefs.getVersion();
                         goNext(version);
                     });
                 }
