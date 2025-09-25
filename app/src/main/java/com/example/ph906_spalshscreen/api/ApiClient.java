@@ -34,14 +34,6 @@ public class ApiClient {
         prefsHelper = new PrefsHelper(context);
     }
 
-    // ---------------------------
-    // Callback Interface
-    // ---------------------------
-    public interface ApiCallback {
-        void onSuccess(JSONObject response);
-        void onError(String errorMessage);
-    }
-
     // ==============================
     // LOGIN
     // ==============================

@@ -11,7 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ph906_spalshscreen.api.ApiClient;
-import com.example.ph906_spalshscreen.api.ApiClient.ApiCallback;
+import com.example.ph906_spalshscreen.api.ApiCallback;
 
 import org.json.JSONObject;
 
