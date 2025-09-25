@@ -16,7 +16,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.ph906_spalshscreen.api.ApiClient;
 import com.example.ph906_spalshscreen.ui.about.AboutFragment;
+import com.example.ph906_spalshscreen.ui.letters.LettersFragment;
 import com.example.ph906_spalshscreen.ui.profile.ProfileFragment;
+import com.example.ph906_spalshscreen.ui.home.HomeFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -67,8 +69,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (btnLetters != null) {
             btnLetters.setOnClickListener(v -> {
                 Log.d(TAG, "Letters button clicked");
-                startActivity(new Intent(MainActivity.this, LettersFragment.class));
+                // Replace fragment instead of starting activity
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new LettersFragment())
+                        .addToBackStack(null)
+                        .commit();
             });
+        }
+
+        // Ensure HomeFragment is loaded as the default fragment
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new HomeFragment())
+                .commit();
         }
     }
 
@@ -92,11 +107,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             // Already here
         } else if (id == R.id.nav_profile) {
-            startActivity(new Intent(this, ProfileFragment.class));
+            getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new ProfileFragment())
+                .addToBackStack(null)
+                .commit();
         } else if (id == R.id.nav_change_password) {
             startActivity(new Intent(this, ChangePasswordActivity.class));
         } else if (id == R.id.nav_about) {
-            startActivity(new Intent(this, AboutFragment.class));
+            getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new AboutFragment())
+                .addToBackStack(null)
+                .commit();
         } else if (id == R.id.nav_logout) {
             logoutUser();
         }
@@ -120,5 +143,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateNavigationHeader();
     }
 }

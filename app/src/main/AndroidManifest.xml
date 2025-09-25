@@ -50,6 +50,7 @@
 
         <!-- Your existing ForgotPasswordActivity, etc. -->
         <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".ChangePasswordActivity" />
 
 
     </application>

@@ -1,8 +1,9 @@
-package com.example.ph906_spalshscreen;
+package com.example.ph906_spalshscreen.ui.letters;
 
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ph906_spalshscreen.R;
 import com.example.ph906_spalshscreen.api.ApiClient;
 import com.example.ph906_spalshscreen.api.ApiCallback;
-import com.example.ph906_spalshscreen.ui.letters.Letter;
-import com.example.ph906_spalshscreen.ui.letters.LettersAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +37,7 @@ public class LettersFragment extends Fragment {
     private List<Letter> allLetters = new ArrayList<>();
     private List<Letter> filteredLetters = new ArrayList<>();
     private ApiClient apiClient;
+    private static final String TAG = "LETTERS_DEBUG";
 
     @Nullable
     @Override
@@ -92,29 +93,41 @@ public class LettersFragment extends Fragment {
         apiClient.getMasterlist(new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
-                allLetters.clear();
-                try {
-                    if (result.has("data")) {
-                        parseStudentsArray(result.getJSONArray("data"));
-                    } else {
-                        parseSingleStudent(result);
+                requireActivity().runOnUiThread(() -> {
+                    Log.d(TAG, "API call succeeded: " + result.toString());
+                    allLetters.clear();
+                    try {
+                        if (result.has("data")) {
+                            parseStudentsArray(result.getJSONArray("data"));
+                        } else {
+                            parseSingleStudent(result);
+                        }
+                        Log.d(TAG, "Loaded " + allLetters.size() + " letters");
+                        Toast.makeText(getContext(), "Loaded " + allLetters.size() + " letters", Toast.LENGTH_LONG).show();
+                        updateUI();
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing data: " + e.getMessage());
+                        showError("Error parsing data: " + e.getMessage());
                     }
-                    updateUI();
-                } catch (JSONException e) {
-                    showError("Error parsing data: " + e.getMessage());
-                }
+                });
             }
 
             @Override
             public void onError(String errorMessage) {
-                showError(errorMessage);
+                requireActivity().runOnUiThread(() -> {
+                    Log.e(TAG, "API call failed: " + errorMessage);
+                    Toast.makeText(getContext(), "API error: " + errorMessage, Toast.LENGTH_LONG).show();
+                    showError(errorMessage);
+                });
             }
         });
     }
 
     private void parseStudentsArray(JSONArray array) throws JSONException {
+        Log.d(TAG, "Parsing students array of length: " + array.length());
         for (int i = 0; i < array.length(); i++) {
             JSONObject obj = array.getJSONObject(i);
+            Log.d(TAG, "Student object: " + obj.toString());
             allLetters.add(parseStudentObject(obj));
         }
     }
@@ -126,15 +139,13 @@ public class LettersFragment extends Fragment {
     private Letter parseStudentObject(JSONObject obj) throws JSONException {
         return new Letter(
                 obj.optString("ph906", ""),
-                "",                                         // placeholder for the 2nd field your model expects
-                obj.optString("full_name", ""),            // full_name (ApiClient now guarantees this)
+                obj.optString("full_name", ""),   // now matches the model
                 obj.optString("address", ""),
                 obj.optString("type", ""),
-                obj.optString("deadline", ""),             // keep deadline even if empty
+                obj.optString("deadline", ""),
                 obj.optString("status", "")
         );
     }
-
 
     private void updateUI() {
         requireActivity().runOnUiThread(() -> {

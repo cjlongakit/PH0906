@@ -1,6 +1,4 @@
-package com.example.ph906_spalshscreen.ui.letters;
-
-public class Letter {
+public class Student {
     private String ph906;
     private String fullName;
     private String address;
@@ -8,8 +6,7 @@ public class Letter {
     private String deadline;
     private String status;
 
-    public Letter(String ph906, String fullName, String address,
-                  String type, String deadline, String status) {
+    public Student(String ph906, String fullName, String address, String type, String deadline, String status) {
         this.ph906 = ph906;
         this.fullName = fullName;
         this.address = address;

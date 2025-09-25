@@ -11,8 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.ph906_spalshscreen.DashboardFragment;
-import com.example.ph906_spalshscreen.LettersFragment;
 import com.example.ph906_spalshscreen.R;
+import com.example.ph906_spalshscreen.ui.letters.LettersFragment;
 import com.google.android.material.button.MaterialButton;
 
 public class HomeFragment extends Fragment {
