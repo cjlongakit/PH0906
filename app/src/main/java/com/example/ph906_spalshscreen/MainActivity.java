@@ -105,7 +105,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            // Already here
+            getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new HomeFragment())
+                .commit();
         } else if (id == R.id.nav_profile) {
             getSupportFragmentManager()
                 .beginTransaction()

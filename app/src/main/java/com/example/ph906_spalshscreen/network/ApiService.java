@@ -21,4 +21,6 @@ public interface ApiService {
     // 🔹 Fetch Masterlist (example)
     @GET("api/masterlist.php")
     Call<List<Master>> getMasterlist(@Header("Authorization") String authHeader);
+
+    
 }
