@@ -2,9 +2,7 @@ package com.example.ph906_spalshscreen.ui.profile;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,21 +17,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.ph906_spalshscreen.PrefsHelper;
 import com.example.ph906_spalshscreen.R;
+import com.example.ph906_spalshscreen.api.ApiCallback;
+import com.example.ph906_spalshscreen.api.ApiClient;
 
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ProfileFragment extends Fragment {
-    private static final String TAG = "ProfileFragment";
 
     private TextView tvUserId, tvFirstName, tvLastName, tvBirthdate, tvNickname,
             tvMobile, tvAddress, tvGuardian, tvGuardianMobile, tvBaptized, tvTeacher,
@@ -41,19 +34,19 @@ public class ProfileFragment extends Fragment {
     private Button btnEdit;
     private ImageView imgProfile;
 
-    private String ph906Raw; // what we get from prefs (likely a 3-digit numeric)
-    private String apiBase = "https://hjcdc.swuitapp.com/api";
-    private RequestQueue queue;
+    private String ph906Raw;
+    private ApiClient apiClient;
+    private PrefsHelper prefs;
 
     private final ActivityResultLauncher<Intent> editLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && getContext() != null) {
-                    PrefsHelper prefs = new PrefsHelper(requireContext());
-                    String photoUri = prefs.getProfilePhotoUri();
-                    if (photoUri != null) {
-                        try { imgProfile.setImageURI(Uri.parse(photoUri)); } catch (Exception ignored) {}
+                if (!isAdded()) return;
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    String savedUrl = prefs.getProfilePhotoUri();
+                    if (savedUrl != null && !savedUrl.isEmpty()) {
+                        loadProfileImage(savedUrl, true); // cache-bust to show new image immediately
                     }
-                    loadProfile();
+                    loadProfile(); // refresh profile fields too
                 }
             });
 
@@ -63,7 +56,6 @@ public class ProfileFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        // Initialize views
         imgProfile = v.findViewById(R.id.img_profile);
         tvUserId = v.findViewById(R.id.tv_user_id);
         tvFirstName = v.findViewById(R.id.tv_first_name);
@@ -81,23 +73,21 @@ public class ProfileFragment extends Fragment {
         tvAge = v.findViewById(R.id.tv_age);
         btnEdit = v.findViewById(R.id.btn_edit);
 
-        queue = Volley.newRequestQueue(requireContext());
+        apiClient = new ApiClient(requireContext());
+        prefs = new PrefsHelper(requireContext());
 
-        // Pull ph906 and photo from prefs
-        PrefsHelper prefs = new PrefsHelper(requireContext());
         ph906Raw = prefs.getPh906();
-        tvUserId.setText(formatPh906(ph906Raw));
+        set(tvUserId, formatPh906(ph906Raw));
 
-        String photoUri = prefs.getProfilePhotoUri();
-        if (photoUri != null) {
-            try {
-                imgProfile.setImageURI(Uri.parse(photoUri));
-            } catch (Exception ignored) {}
+        String savedUrl = prefs.getProfilePhotoUri();
+        if (savedUrl != null && !savedUrl.isEmpty()) {
+            loadProfileImage(savedUrl, false);
+        } else {
+            Glide.with(this).load(R.drawable.account_circle).into(imgProfile);
         }
 
         btnEdit.setOnClickListener(view -> {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-            // Pass only the ph906Id; Edit screen will load rest and allow photo change
             intent.putExtra("ph906Id", ph906Raw);
             editLauncher.launch(intent);
         });
@@ -107,108 +97,105 @@ public class ProfileFragment extends Fragment {
     }
 
     private String formatPh906(String raw) {
-        if (raw == null || raw.isEmpty()) return "PH906-"; // fallback
+        if (raw == null || raw.isEmpty()) return "PH906-";
         String digits = raw.replaceAll("[^0-9]", "");
-        if (digits.length() >= 3) {
-            return "PH906-" + digits; // show as-is (no forced leading zeros)
-        }
+        if (digits.length() >= 1) return "PH906-" + digits;
         return raw.startsWith("PH906-") ? raw : ("PH906-" + raw);
     }
 
     private void loadProfile() {
-        PrefsHelper prefs = new PrefsHelper(requireContext());
-        String token = prefs.getToken();
-        if (token == null || token.trim().isEmpty()) {
-            Toast.makeText(getContext(), "Not logged in (missing token)", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String[] urls = new String[] {
-                apiBase + "/api.php/my_profile",
-                apiBase + "/api.php?resource=my_profile",
-                apiBase + "/api.php?route=my_profile",
-                apiBase + "/my_profile.php"
-        };
-        requestProfileWithAuth(urls, 0, token);
-    }
-
-    private void requestProfileWithAuth(String[] urls, int index, String token) {
-        if (index >= urls.length) {
-            Toast.makeText(getContext(), "Load failed (all endpoints)", Toast.LENGTH_LONG).show();
-            return;
-        }
-        String url = urls[index];
-        Log.d(TAG, "GET " + url);
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
-                this::handleProfileResponse,
-                error -> {
-                    logVolleyError(url, error);
-                    requestProfileWithAuth(urls, index + 1, token);
-                }) {
+        apiClient.getMyProfile(new ApiCallback() {
             @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> h = new HashMap<>();
-                h.put("Accept", "application/json");
-                h.put("Authorization", token);
-                return h;
+            public void onSuccess(JSONObject response) {
+                if (!isAdded()) return;
+                requireActivity().runOnUiThread(() -> handleProfileResponse(response));
             }
-        };
-        queue.add(req);
-    }
-
-    private void logVolleyError(String url, VolleyError error) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Request failed: ").append(url).append('\n');
-        if (error.networkResponse != null) {
-            sb.append("code=").append(error.networkResponse.statusCode);
-            try {
-                String body = new String(error.networkResponse.data);
-                sb.append(" body=").append(body);
-            } catch (Exception ignored) {}
-        } else if (error.getMessage() != null) {
-            sb.append("msg=").append(error.getMessage());
-        } else {
-            sb.append(String.valueOf(error));
-        }
-        Log.e(TAG, sb.toString());
-        Toast.makeText(getContext(), sb.toString(), Toast.LENGTH_LONG).show();
+            @Override
+            public void onError(String message) {
+                if (!isAdded()) return;
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), "Load failed: " + message, Toast.LENGTH_LONG).show()
+                );
+            }
+        });
     }
 
     private void handleProfileResponse(JSONObject response) {
         try {
-            // Accept either { ...fields } or { data: { ...fields } } or { status: success, data: {...} }
             JSONObject obj = response;
             if (response.has("data") && response.opt("data") instanceof JSONObject) {
                 obj = response.getJSONObject("data");
             }
-            // Fill views with graceful fallbacks
-            tvFirstName.setText(optString(obj, "first_name"));
-            tvLastName.setText(optString(obj, "last_name"));
-            tvBirthdate.setText(optString(obj, "birthday"));
-            tvNickname.setText(optString(obj, "nickname"));
-            tvMobile.setText(firstNonEmpty(obj, "mobile_number", "mobile"));
-            tvAddress.setText(optString(obj, "address"));
-            tvGuardian.setText(optString(obj, "guardian_name"));
-            tvGuardianMobile.setText(optString(obj, "guardian_mobile"));
-            String baptized = firstNonEmpty(obj, "water_baptized", "baptized");
-            tvBaptized.setText(baptized);
-            tvTeacher.setText(optString(obj, "teacher"));
-            tvSex.setText(optString(obj, "sex"));
-            tvCaseworker.setText(firstNonEmpty(obj, "caseworker_assigned", "caseworker"));
-            tvAge.setText(optString(obj, "age"));
-        } catch (Exception ignored) {
-            Toast.makeText(getContext(), "Parse error", Toast.LENGTH_SHORT).show();
+            // ALWAYS coerce to String; never pass numbers directly to setText(int)
+            set(tvFirstName, obj.optString("first_name", ""));
+            set(tvLastName,  obj.optString("last_name", ""));
+            set(tvBirthdate, obj.optString("birthday", ""));
+            set(tvNickname,  obj.optString("nickname", ""));
+
+            String mobile = firstNonEmpty(obj.optString("mobile_number", ""), obj.optString("mobile", ""));
+            set(tvMobile, mobile);
+
+            set(tvAddress,  obj.optString("address", ""));
+            set(tvGuardian, obj.optString("guardian_name", ""));
+            set(tvGuardianMobile, obj.optString("guardian_mobile", ""));
+            set(tvBaptized, firstNonEmpty(obj.optString("water_baptized", ""), obj.optString("baptized", "")));
+            set(tvTeacher,  obj.optString("teacher", ""));
+            set(tvSex,      obj.optString("sex", ""));
+            // age can be int or string; convert safely
+            String ageStr = obj.has("age") ? String.valueOf(obj.opt("age")) : "";
+            set(tvAge, "null".equalsIgnoreCase(ageStr) ? "" : ageStr);
+            set(tvCaseworker, obj.optString("caseworker_assigned", ""));
+
+            // If backend includes photo_url, prefer it and save
+            String apiPhotoUrl = obj.optString("photo_url", "").trim();
+            if (!apiPhotoUrl.isEmpty()) {
+                prefs.saveProfilePhotoUri(apiPhotoUrl);
+                loadProfileImage(apiPhotoUrl, true); // cache-bust once
+            }
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    private String optString(JSONObject obj, String key) {
-        String v = obj.optString(key, "");
-        return v == null ? "" : v;
+    private String firstNonEmpty(String a, String b) {
+        if (a != null && !a.trim().isEmpty()) return a;
+        return (b == null) ? "" : b;
     }
-    private String firstNonEmpty(JSONObject obj, String... keys) {
-        for (String k : keys) {
-            String v = obj.optString(k, "");
-            if (v != null && !v.trim().isEmpty()) return v;
+
+    private void loadProfileImage(String url, boolean bustCache) {
+        if (!isAdded()) return;
+        String toLoad = url;
+        if (bustCache) {
+            String sep = url.contains("?") ? "&" : "?";
+            toLoad = url + sep + "t=" + System.currentTimeMillis();
         }
-        return "";
+        // Clear any pending request to avoid flicker/race
+        try { Glide.with(this).clear(imgProfile); } catch (Exception ignored) {}
+
+        try {
+            Glide.with(this)
+                    .load(toLoad)
+                    .placeholder(R.drawable.account_circle)
+                    .error(R.drawable.account_circle)
+                    .centerCrop()
+                    .diskCacheStrategy(bustCache ? DiskCacheStrategy.NONE : DiskCacheStrategy.AUTOMATIC)
+                    .skipMemoryCache(bustCache)
+                    .into(imgProfile);
+        } catch (IllegalStateException ignored) {
+            // Fragment might be in transition; skip
+        }
+    }
+
+    // Safe setter: coerce any value to string and coalesce nulls to ""
+    private void set(TextView v, Object val) {
+        if (v == null) return;
+        String s;
+        if (val == null) {
+            s = "";
+        } else {
+            s = String.valueOf(val);
+            if ("null".equalsIgnoreCase(s)) s = "";
+        }
+        v.setText(s);
     }
 }

@@ -11,9 +11,10 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/ph906"
+        android:roundIcon="@drawable/ph906"
         android:supportsRtl="true"
         android:theme="@style/Theme.PH906_spalshscreen"
         tools:targetApi="31">

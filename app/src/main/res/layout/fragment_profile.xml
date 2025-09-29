@@ -23,9 +23,7 @@
                 android:id="@+id/img_profile"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:src="@drawable/rodeney"
-                android:background="@drawable/account_circle"
-                android:padding="4dp"
+                android:src="@drawable/account_circle"
                 android:scaleType="centerCrop"
                 android:contentDescription="Profile Picture"
                 android:layout_marginBottom="12dp" />
@@ -41,161 +39,314 @@
         </LinearLayout>
 
         <!-- Personal Info Card -->
-
-        <!-- Guardian Info Card -->
-
-        <LinearLayout style="@style/ProfileCard">
+        <LinearLayout
+            style="@style/ProfileCard"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <TextView
                 style="@style/CardTitle"
                 android:text="Personal Information" />
 
-            <LinearLayout style="@style/FieldContainer">
+            <!-- Row template:
+                 - Label: width 0dp, weight 1
+                 - Value: width 0dp, weight 1 (or 2 if you want wider value column)
+            -->
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
 
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="First Name" />
 
                 <TextView
                     android:id="@+id/tv_first_name"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
 
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Last Name" />
 
                 <TextView
                     android:id="@+id/tv_last_name"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
 
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Sex" />
 
                 <TextView
                     android:id="@+id/tv_sex"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
 
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Birthdate" />
 
                 <TextView
                     android:id="@+id/tv_birthdate"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
 
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Age" />
 
                 <TextView
                     android:id="@+id/tv_age"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
 
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Nickname" />
 
                 <TextView
                     android:id="@+id/tv_nickname"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
 
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Mobile Number" />
 
                 <TextView
                     android:id="@+id/tv_mobile"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
 
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Address" />
 
                 <TextView
                     android:id="@+id/tv_address"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:maxLines="3"
+                    android:ellipsize="end" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
 
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Caseworker" />
 
                 <TextView
                     android:id="@+id/tv_caseworker"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1" />
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout style="@style/ProfileCard">
+        <!-- Guardian Info Card -->
+        <LinearLayout
+            style="@style/ProfileCard"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <TextView
                 style="@style/CardTitle"
                 android:text="Guardian Information" />
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Guardian Name" />
+
                 <TextView
                     android:id="@+id/tv_guardian"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Guardian Mobile" />
+
                 <TextView
                     android:id="@+id/tv_guardian_mobile"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1" />
             </LinearLayout>
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Water Baptized" />
+
                 <TextView
                     android:id="@+id/tv_baptized"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1" />
             </LinearLayout>
         </LinearLayout>
 
         <!-- School Info Card -->
-        <LinearLayout style="@style/ProfileCard">
+        <LinearLayout
+            style="@style/ProfileCard"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <TextView
                 style="@style/CardTitle"
                 android:text="School Information" />
 
-            <LinearLayout style="@style/FieldContainer">
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
                 <TextView
                     style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Teacher Name" />
+
                 <TextView
                     android:id="@+id/tv_teacher"
-                    style="@style/FieldValue" />
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1" />
             </LinearLayout>
         </LinearLayout>
 
@@ -208,6 +359,5 @@
             android:layout_margin="16dp"
             style="@style/ActionButton"
             android:backgroundTint="#2196F3"/>
-
     </LinearLayout>
 </ScrollView>

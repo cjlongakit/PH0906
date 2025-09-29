@@ -31,7 +31,7 @@ public class TermsActivity extends AppCompatActivity {
 
     // Called by your fragment when user taps "Agree"
     public void onAgreed() {
-        new PrefManager(this).setTermsAccepted(version);
+        new PrefManager(this).acceptTerms(version, true);
 
         startActivity(new Intent(this, PrivacyActivity.class)
                 .putExtra("version", version));

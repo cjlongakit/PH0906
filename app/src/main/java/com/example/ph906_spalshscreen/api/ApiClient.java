@@ -3,12 +3,17 @@ package com.example.ph906_spalshscreen.api;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+
 import com.example.ph906_spalshscreen.PrefsHelper;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
 import okio.BufferedSink;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -39,18 +44,67 @@ public class ApiClient {
         appContext = context.getApplicationContext();
     }
 
+    // Expose OkHttp so activities can reuse it for custom requests/fallbacks
+    public OkHttpClient getOkHttp() {
+        return client;
+    }
+
     // ==============================
-    // LOGIN
+    // LOGIN (with tolerant retries)
     // ==============================
-    public void studentLogin(String ph906, String birthday, ApiCallback callback) {
+    public void studentLogin(String ph906Input, String birthdayInput, ApiCallback callback) {
+        // Prepare candidate combos to tolerate backend format quirks
+        String digits = ph906Input == null ? "" : ph906Input.replaceAll("[^0-9]", "");
+        String ymd = birthdayInput == null ? "" : birthdayInput.trim();
+        String us = toUsDate(ymd);
+        String pref = "PH906-";
+        String padded4 = leftPad(digits, 4);
+
+        String[][] combos = new String[][]{
+                {digits, ymd},
+                {pref + digits, ymd},
+                {pref + padded4, ymd},
+                {digits, us},
+                {pref + digits, us},
+                {pref + padded4, us}
+        };
+        String[] endpoints = new String[]{
+                "/login.php",
+                "/api.php?resource=login",
+                "/api.php/login"
+        };
+        attemptLoginCombos(combos, 0, endpoints, 0, callback);
+    }
+
+    private void attemptLoginCombos(String[][] combos, int comboIdx, String[] endpoints, int epIdx, ApiCallback callback) {
+        if (comboIdx >= combos.length) { callback.onError("Invalid credentials"); return; }
+        if (epIdx >= endpoints.length) { attemptLoginCombos(combos, comboIdx + 1, endpoints, 0, callback); return; }
+        String ph = combos[comboIdx][0];
+        String bd = combos[comboIdx][1];
+        String endpoint = endpoints[epIdx];
+        attemptLoginOnEndpoint(endpoint, ph, bd, new ApiCallback() {
+            @Override public void onSuccess(JSONObject response) { callback.onSuccess(response); }
+            @Override public void onError(String message) {
+                // If looks like invalid/401, try next combo; otherwise try next endpoint first
+                String lower = message == null ? "" : message.toLowerCase(java.util.Locale.US);
+                if (lower.contains("invalid") || lower.contains("401")) {
+                    attemptLoginCombos(combos, comboIdx + 1, endpoints, 0, callback);
+                } else {
+                    attemptLoginCombos(combos, comboIdx, endpoints, epIdx + 1, callback);
+                }
+            }
+        });
+    }
+
+    private void attemptLoginOnEndpoint(String endpoint, String ph, String bd, ApiCallback callback) {
         try {
             JSONObject json = new JSONObject();
-            json.put("ph906", ph906);
-            json.put("birthday", birthday);
+            json.put("ph906", ph);
+            json.put("birthday", bd);
 
-            RequestBody body = RequestBody.create(json.toString(), JSON); // updated signature
+            RequestBody body = RequestBody.create(json.toString(), JSON);
             Request request = new Request.Builder()
-                    .url(BASE_URL + "/login.php")
+                    .url(BASE_URL + endpoint)
                     .addHeader("Accept", "application/json")
                     .post(body)
                     .build();
@@ -59,12 +113,12 @@ public class ApiClient {
                 @Override public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     callback.onError("Network error: " + e.getMessage());
                 }
-
                 @Override public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     String responseBody = response.body() != null ? response.body().string() : "";
                     try {
                         JSONObject jsonResponse = new JSONObject(responseBody);
-                        if ("success".equalsIgnoreCase(jsonResponse.optString("status"))) {
+                        String status = jsonResponse.optString("status");
+                        if ("success".equalsIgnoreCase(status)) {
                             // Save details into prefs
                             prefsHelper.saveLoginInfo(
                                     jsonResponse.optString("ph906"),
@@ -72,22 +126,43 @@ public class ApiClient {
                                     jsonResponse.optString("first_name", "") + " " + jsonResponse.optString("last_name", ""),
                                     jsonResponse.optBoolean("is_default_password", true)
                             );
-                            prefsHelper.saveBirthday(jsonResponse.optString("birthday", birthday));
-                            boolean adult = isAdultFromBirthday(jsonResponse.optString("birthday", birthday));
+                            prefsHelper.saveBirthday(jsonResponse.optString("birthday", bd));
+                            boolean adult = isAdultFromBirthday(jsonResponse.optString("birthday", bd));
                             prefsHelper.saveVersion(adult ? "adult" : "minor");
-
                             callback.onSuccess(jsonResponse);
                         } else {
-                            callback.onError(jsonResponse.optString("message", "Login failed"));
+                            String msg = jsonResponse.optString("message", "Login failed (HTTP " + response.code() + ")");
+                            callback.onError(msg);
                         }
                     } catch (JSONException e) {
-                        callback.onError("JSON parse error: " + e.getMessage());
+                        callback.onError("JSON parse error (HTTP " + response.code() + ") on " + endpoint + ": " + e.getMessage());
                     }
                 }
             });
         } catch (JSONException e) {
             callback.onError("JSON creation error: " + e.getMessage());
         }
+    }
+
+    private String toUsDate(String ymd) {
+        try {
+            if (ymd == null) return "";
+            // If already YYYY-MM-DD, convert to MM/DD/YYYY for tolerant retry
+            if (ymd.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                String[] p = ymd.split("-");
+                return p[1] + "/" + p[2] + "/" + p[0];
+            }
+            return ymd;
+        } catch (Exception ignored) { return ymd; }
+    }
+
+    private String leftPad(String s, int width) {
+        if (s == null) s = "";
+        if (s.length() >= width) return s;
+        StringBuilder sb = new StringBuilder();
+        for (int i = s.length(); i < width; i++) sb.append('0');
+        sb.append(s);
+        return sb.toString();
     }
 
     // ==============================
@@ -105,7 +180,7 @@ public class ApiClient {
             json.put("current_password", currentPassword);
             json.put("new_password", newPassword);
 
-            RequestBody body = RequestBody.create(json.toString(), JSON); // updated signature
+            RequestBody body = RequestBody.create(json.toString(), JSON);
             Request request = new Request.Builder()
                     .url(BASE_URL + "/change_password.php")
                     .addHeader("Authorization", token)
@@ -132,10 +207,10 @@ public class ApiClient {
                             );
                             callback.onSuccess(jsonResponse);
                         } else {
-                            callback.onError(jsonResponse.optString("message", "Failed to change password"));
+                            callback.onError(jsonResponse.optString("message", "Failed to change password (HTTP " + response.code() + ")"));
                         }
                     } catch (JSONException e) {
-                        callback.onError("JSON parse error: " + e.getMessage());
+                        callback.onError("JSON parse error (HTTP " + response.code() + "): " + e.getMessage());
                     }
                 }
             });
@@ -145,116 +220,110 @@ public class ApiClient {
     }
 
     // ==============================
-    // PROFILE
+    // PROFILE (robust with ph906 param + fallback)
     // ==============================
     public void getMyProfile(ApiCallback callback) {
-        requestWithToken("/my_profile.php", "GET", null, callback);
+        String digits = safeDigits(prefsHelper.getPh906());
+        String[] endpoints = new String[] {
+                "/api.php?resource=my_profile" + (digits.isEmpty() ? "" : "&ph906=" + digits),
+                "/api.php?route=my_profile"    + (digits.isEmpty() ? "" : "&ph906=" + digits),
+                "/api.php/my_profile"          + (digits.isEmpty() ? "" : "?ph906=" + digits),
+                "/my_profile.php"              + (digits.isEmpty() ? "" : "?ph906=" + digits)
+        };
+        requestWithTokenFallback(endpoints, "GET", null, callback, 0, "GET my_profile");
     }
 
     public void updateMyProfile(JSONObject payload, ApiCallback callback) {
-        requestWithToken("/my_profile.php", "PUT", payload, callback);
+        String digits = safeDigits(prefsHelper.getPh906());
+        String[] endpoints = new String[] {
+                "/api.php?resource=masterlist" + (digits.isEmpty() ? "" : "&ph906=" + digits),
+                "/api.php?route=masterlist"    + (digits.isEmpty() ? "" : "&ph906=" + digits),
+                "/api.php/masterlist"          + (digits.isEmpty() ? "" : "?ph906=" + digits),
+                "/masterlist.php"              + (digits.isEmpty() ? "" : "?ph906=" + digits)
+        };
+        requestWithTokenFallback(endpoints, "PUT", payload, callback, 0, "PUT masterlist");
     }
 
-    private void requestWithToken(String endpoint, String method, JSONObject jsonBody, ApiCallback callback) {
+    private void requestWithTokenFallback(String[] endpoints, String method, JSONObject jsonBody,
+                                          ApiCallback callback, int idx, String opTag) {
+        if (idx >= endpoints.length) {
+            callback.onError(opTag + " failed on all endpoints");
+            return;
+        }
         String token = prefsHelper.getToken();
-        if (token == null) {
+        if (token == null || token.isEmpty()) {
             callback.onError("Not logged in");
             return;
         }
 
+        String endpoint = endpoints[idx];
         Request.Builder builder = new Request.Builder()
                 .url(BASE_URL + endpoint)
                 .addHeader("Authorization", token)
                 .addHeader("Accept", "application/json");
 
         if ("POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method)) {
-            RequestBody body = jsonBody != null ?
-                    RequestBody.create(jsonBody.toString(), JSON) : // updated signature
-                    RequestBody.create("{}", JSON); // updated signature
+            RequestBody body = jsonBody != null
+                    ? RequestBody.create(jsonBody.toString(), JSON)
+                    : RequestBody.create("{}", JSON);
             builder.method(method, body);
         } else {
             builder.get();
         }
 
         client.newCall(builder.build()).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                callback.onError("Network error: " + e.getMessage());
+            @Override public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                // Try next endpoint
+                requestWithTokenFallback(endpoints, method, jsonBody, callback, idx + 1, opTag);
             }
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+            @Override public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String res = response.body() != null ? response.body().string() : "";
                 try {
                     JSONObject jsonResponse = new JSONObject(res);
-                    if ("success".equalsIgnoreCase(jsonResponse.optString("status"))) {
+                    // Accept only explicit success
+                    if (response.isSuccessful() && "success".equalsIgnoreCase(jsonResponse.optString("status"))) {
                         callback.onSuccess(jsonResponse);
-                    }
-                    else {
-                        callback.onError(jsonResponse.optString("message", "Request failed"));
+                    } else {
+                        // Try next endpoint; if this was the last, surface detailed message
+                        if (idx + 1 < endpoints.length) {
+                            requestWithTokenFallback(endpoints, method, jsonBody, callback, idx + 1, opTag);
+                        } else {
+                            String msg = jsonResponse.optString("message", res);
+                            callback.onError(opTag + " failed (HTTP " + response.code() + " @ " + endpoint + "): " + msg);
+                        }
                     }
                 } catch (JSONException e) {
-                    callback.onError("JSON parse error: " + e.getMessage());
+                    // If body wasn't valid JSON (e.g., empty or HTML), try next; else report with context
+                    if (idx + 1 < endpoints.length) {
+                        requestWithTokenFallback(endpoints, method, jsonBody, callback, idx + 1, opTag);
+                    } else {
+                        String snippet = res == null ? "" : (res.length() > 180 ? res.substring(0, 180) + "..." : res);
+                        callback.onError(opTag + " JSON parse error (HTTP " + response.code() + " @ " + endpoint + "): " + e.getMessage() +
+                                (snippet.isEmpty() ? "" : " body=" + snippet));
+                    }
                 }
             }
         });
     }
 
     // ==============================
-    // SESSION HELPERS
+    // GET MASTERLIST (LETTERS) — unchanged
     // ==============================
-    public boolean isLoggedIn() { return prefsHelper.isLoggedIn(); }
-    public String getFullName() { return prefsHelper.getFullName(); }
-    public String getLoggedInStudentId() { return prefsHelper.getPh906(); }
-    public String getSavedVersion() { return prefsHelper.getVersion(); }
-    public void logout() { prefsHelper.clearAll(); }
-
-    // ==============================
-    // AGE CALCULATOR
-    // ==============================
-    private boolean isAdultFromBirthday(String birthday) {
-        try {
-            String[] parts = birthday.split("-");
-            int year = Integer.parseInt(parts[0]);
-            int month = Integer.parseInt(parts[1]);
-            int day = Integer.parseInt(parts[2]);
-
-            Calendar dob = Calendar.getInstance();
-            dob.set(year, month - 1, day);
-
-            Calendar today = Calendar.getInstance();
-            int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
-            if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) age--;
-
-            return age >= 18;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    // ==============================
-    // GET MASTERLIST (LETTERS)
-    // ==============================
-    /**
-     * Fetches the student masterlist from the PHP endpoint.
-     * The endpoint should be get_students.php on your server.
-     * Returns the JSON response to the provided ApiCallback.
-     */
     public void getMasterlist(final ApiCallback callback) {
         String endpointUrl = BASE_URL + "/get_students.php";
 
         Request request = new Request.Builder()
                 .url(endpointUrl)
                 .get()
+                .addHeader("Accept", "application/json")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            @Override public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 callback.onError("Network error: " + e.getMessage());
             }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            @Override public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseBody = response.body() != null ? response.body().string() : "";
                 try {
                     JSONObject jsonResponse = new JSONObject(responseBody);
@@ -265,18 +334,12 @@ public class ApiClient {
             }
         });
     }
+
     // ==============================
-// UPDATE MASTERLIST ENTRY
-// ==============================
-    /**
-     * Updates a specific masterlist record.
-     * @param studentId the ph906 / user id
-     * @param payload   the JSON with updated fields
-     * @param callback  your callback
-     */
+    // UPDATE MASTERLIST ENTRY (id-based) — unchanged
+    // ==============================
     public void updateMasterlist(String studentId, JSONObject payload, ApiCallback callback) {
         String token = prefsHelper.getToken(); // if you require auth header
-        // build your endpoint URL; adjust .php vs REST as needed
         String url = BASE_URL + "/masterlist/" + studentId;
 
         RequestBody body = RequestBody.create(payload.toString(), JSON);
@@ -285,27 +348,24 @@ public class ApiClient {
                 .addHeader("Accept", "application/json")
                 .put(body); // HTTP PUT
 
-        // include Authorization header if your backend expects token
         if (token != null && !token.isEmpty()) {
             builder.addHeader("Authorization", token);
         }
 
         client.newCall(builder.build()).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            @Override public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 callback.onError("Network error: " + e.getMessage());
             }
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            @Override public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String res = response.body() != null ? response.body().string() : "";
                 try {
                     JSONObject jsonResponse = new JSONObject(res);
-                    // Adjust according to your backend's success field
                     if ("success".equalsIgnoreCase(jsonResponse.optString("status"))) {
                         callback.onSuccess(jsonResponse);
                     } else {
-                        callback.onError(jsonResponse.optString("message", "Update failed"));
+                        callback.onError("Update failed (HTTP " + response.code() + "): " +
+                                jsonResponse.optString("message", res));
                     }
                 } catch (JSONException e) {
                     callback.onError("JSON parse error: " + e.getMessage());
@@ -373,10 +433,12 @@ public class ApiClient {
                     if ("success".equalsIgnoreCase(json.optString("status"))) {
                         callback.onSuccess(json);
                     } else {
-                        callback.onError(json.optString("message", "Upload failed"));
+                        callback.onError("Upload failed (HTTP " + response.code() + "): " +
+                                json.optString("message", body));
                     }
                 } catch (JSONException e) {
-                    callback.onError("JSON parse error: " + e.getMessage());
+                    callback.onError("Upload JSON parse error (HTTP " + response.code() + "): " + e.getMessage() +
+                            (body == null || body.isEmpty() ? "" : " body=" + (body.length() > 180 ? body.substring(0,180)+"..." : body)));
                 }
             }
         });
@@ -392,4 +454,41 @@ public class ApiClient {
         return null;
     }
 
+    // ==============================
+    // SESSION HELPERS
+    // ==============================
+    public boolean isLoggedIn() { return prefsHelper.isLoggedIn(); }
+    public String getFullName() { return prefsHelper.getFullName(); }
+    public String getLoggedInStudentId() { return prefsHelper.getPh906(); }
+    public String getSavedVersion() { return prefsHelper.getVersion(); }
+    public void logout() { prefsHelper.clearAll(); }
+
+    // ==============================
+    // AGE CALCULATOR
+    // ==============================
+    private boolean isAdultFromBirthday(String birthday) {
+        try {
+            String[] parts = birthday.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+            int day = Integer.parseInt(parts[2]);
+
+            Calendar dob = Calendar.getInstance();
+            dob.set(year, month - 1, day);
+
+            Calendar today = Calendar.getInstance();
+            int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+            if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) age--;
+
+            return age >= 18;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private String safeDigits(String raw) {
+        if (raw == null) return "";
+        String d = raw.replaceAll("[^0-9]", "");
+        return d == null ? "" : d;
+    }
 }

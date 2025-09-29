@@ -19,10 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.example.ph906_spalshscreen.PrefsHelper;
 import com.example.ph906_spalshscreen.R;
 import com.example.ph906_spalshscreen.api.ApiCallback;
@@ -49,7 +48,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private Button btnSave, btnCancel;
 
     private String ph906;
-    private final String baseUrl = "https://hjcdc.swuitapp.com/api/api.php/masterlist"; // router endpoint
     private RequestQueue queue;
     private PrefsHelper prefsHelper;
 
@@ -72,6 +70,10 @@ public class EditProfileActivity extends AppCompatActivity {
                         pendingPhotoUri = uri;
                         imgProfileEdit.setImageURI(uri);
                         isPhotoChanged = true;
+                        // Save immediately so other screens see it
+                        if (prefsHelper != null) {
+                            prefsHelper.saveLocalPhotoUri(uri.toString());
+                        }
                     } catch (Exception e) {
                         Toast.makeText(this, "Failed to access selected photo", Toast.LENGTH_SHORT).show();
                     }
@@ -85,6 +87,10 @@ public class EditProfileActivity extends AppCompatActivity {
                     pendingPhotoUri = cameraTempUri;
                     imgProfileEdit.setImageURI(cameraTempUri);
                     isPhotoChanged = true;
+                    // Save immediately so other screens see it
+                    if (prefsHelper != null) {
+                        prefsHelper.saveLocalPhotoUri(cameraTempUri.toString());
+                    }
                 }
             });
 
@@ -158,13 +164,18 @@ public class EditProfileActivity extends AppCompatActivity {
         tvUserId.setText(formatPh906(ph906));
 
         String photoUrl = prefsHelper.getProfilePhotoUri();
-        if (photoUrl != null) {
+        if (photoUrl != null && !photoUrl.isEmpty()) {
             try {
-                imgProfileEdit.setImageURI(Uri.parse(photoUrl));
+                // Show last saved server url; use Glide to handle http/https
+                Glide.with(this)
+                        .load(photoUrl)
+                        .placeholder(R.drawable.account_circle)
+                        .error(R.drawable.account_circle)
+                        .into(imgProfileEdit);
             } catch (Exception ignored) {}
         }
 
-        // Prefill form fields
+        // Prefill form fields (if Extras were provided by caller)
         etFirstName.setText(getIntent().getStringExtra("firstName"));
         etLastName.setText(getIntent().getStringExtra("lastName"));
         etBirthdate.setText(getIntent().getStringExtra("birthdate"));
@@ -250,6 +261,11 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
+    private String formatPh906(String raw) {
+        String digits = raw == null ? "" : raw.replaceAll("[^0-9]", "");
+        return "PH906-" + digits;
+    }
+
     private void saveAllChanges() {
         if (isPhotoChanged && pendingPhotoUri != null) {
             // Upload photo first, then save profile
@@ -262,7 +278,14 @@ public class EditProfileActivity extends AppCompatActivity {
                     // Save the photo URL from response
                     String photoUrl = response.optString("url");
                     if (!photoUrl.isEmpty()) {
-                        prefsHelper.saveProfilePhotoUri(photoUrl);
+                        prefsHelper.saveServerPhotoUrl(photoUrl);
+
+                        // Show the server image now (bypass cache once)
+                        Glide.with(EditProfileActivity.this)
+                                .load(photoUrl + (photoUrl.contains("?") ? "&" : "?") + "t=" + System.currentTimeMillis())
+                                .placeholder(R.drawable.account_circle)
+                                .error(R.drawable.account_circle)
+                                .into(imgProfileEdit);
                     }
 
                     // Now save the rest of the profile
@@ -289,55 +312,48 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    private String formatPh906(String raw) {
-        String digits = raw == null ? "" : raw.replaceAll("[^0-9]", "");
-        return "PH906-" + digits;
-    }
-
     private void saveProfile() {
-        String digits = ph906 == null ? "" : ph906.replaceAll("[^0-9]", "");
-        String url = baseUrl + "/" + digits;
-
-        JSONObject payload = new JSONObject();
         try {
-            payload.put("first_name", etFirstName.getText().toString());
-            payload.put("last_name", etLastName.getText().toString());
-            payload.put("sex", etSex.getText().toString());
-            payload.put("birthday", etBirthdate.getText().toString());
-            payload.put("age", etAge.getText().toString());
-            payload.put("caseworker_assigned", etCaseworkerAssigned.getText().toString());
-            payload.put("teacher", etTeacher.getText().toString());
-            payload.put("nickname", etNickname.getText().toString());
-            payload.put("mobile_number", etMobileNumber.getText().toString());
-            payload.put("address", etAddress.getText().toString());
-            payload.put("guardian_name", etGuardianName.getText().toString());
-            payload.put("guardian_mobile", etGuardianMobile.getText().toString());
-            payload.put("water_baptized", etWaterBaptized.getText().toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Failed to prepare data", Toast.LENGTH_SHORT).show();
-                btnSave.setEnabled(true);
+            JSONObject payload = new JSONObject();
+            payload.put("first_name", etFirstName.getText().toString().trim());
+            payload.put("last_name", etLastName.getText().toString().trim());
+            payload.put("sex", etSex.getText().toString().trim());
+            payload.put("birthday", etBirthdate.getText().toString().trim());
+            payload.put("age", etAge.getText().toString().trim());
+            payload.put("caseworker_assigned", etCaseworkerAssigned.getText().toString().trim());
+            payload.put("teacher", etTeacher.getText().toString().trim());
+            payload.put("nickname", etNickname.getText().toString().trim());
+            payload.put("mobile_number", etMobileNumber.getText().toString().trim());
+            payload.put("address", etAddress.getText().toString().trim());
+            payload.put("guardian_name", etGuardianName.getText().toString().trim());
+            payload.put("guardian_mobile", etGuardianMobile.getText().toString().trim());
+            payload.put("water_baptized", etWaterBaptized.getText().toString().trim());
+
+            btnSave.setEnabled(false);
+
+            // Route through ApiClient (which has endpoint fallback logic)
+            apiClient.updateMyProfile(payload, new ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(EditProfileActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
+                        setResult(RESULT_OK);
+                        finish();
+                    });
+                }
+
+                @Override
+                public void onError(String message) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(EditProfileActivity.this, "Save failed: " + message, Toast.LENGTH_LONG).show();
+                        btnSave.setEnabled(true);
+                    });
+                }
             });
-            return;
+        } catch (JSONException e) {
+            Toast.makeText(this, "Failed to prepare data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            btnSave.setEnabled(true);
         }
-
-        // Set result OK so ProfileFragment knows to reload
-        setResult(RESULT_OK);
-
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.PUT, url, payload,
-                response -> runOnUiThread(() -> {
-                    Toast.makeText(EditProfileActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
-                    finish();
-                }),
-                error -> runOnUiThread(() -> {
-                    Toast.makeText(EditProfileActivity.this,
-                            "Save failed: " + (error.getMessage() == null ? "Unknown" : error.getMessage()),
-                            Toast.LENGTH_LONG).show();
-                    btnSave.setEnabled(true);
-                }));
-
-        queue.add(req);
     }
 
     @Override
@@ -348,3 +364,4 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 }
+

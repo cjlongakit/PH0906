@@ -19,6 +19,7 @@ public class PrivacyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_privacy);
 
         version = getIntent().getStringExtra("version");
+        if (version == null || version.trim().isEmpty()) version = "minor";
 
         Fragment fragment = "minor".equals(version)
                 ? new DataPrivacyMinorFragment()
@@ -31,7 +32,7 @@ public class PrivacyActivity extends AppCompatActivity {
 
     // Called by your fragment when user taps "Agree"
     public void onAgreed() {
-        new PrefManager(this).setPrivacyAccepted(version);
+        new PrefManager(this).acceptPrivacy(version, true);
 
         startActivity(new Intent(this, MainActivity.class)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));

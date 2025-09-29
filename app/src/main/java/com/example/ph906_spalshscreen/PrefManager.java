@@ -4,31 +4,38 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class PrefManager {
+    private static final String PREF_NAME = "terms_privacy_prefs";
+    private static final String KEY_TERMS_PREFIX = "terms_accepted_";
+    private static final String KEY_PRIVACY_PREFIX = "privacy_accepted_";
 
-    private static final String PREF_NAME = "user_session";
-    private SharedPreferences prefs;
+    private final SharedPreferences prefs;
 
-    public PrefManager(Context context) {
-        prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    public PrefManager(Context ctx) {
+        prefs = ctx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    public void setTermsAccepted(String version) {
-        prefs.edit().putBoolean("accepted_terms_" + version, true).apply();
-    }
-
-    public void setPrivacyAccepted(String version) {
-        prefs.edit().putBoolean("accepted_privacy_" + version, true).apply();
+    private String normVersion(String v) {
+        if (v == null || v.trim().isEmpty()) return "minor"; // safe default
+        String n = v.trim().toLowerCase();
+        if (!n.equals("minor") && !n.equals("adult")) return "minor";
+        return n;
     }
 
     public boolean isTermsAccepted(String version) {
-        return prefs.getBoolean("accepted_terms_" + version, false);
+        return prefs.getBoolean(KEY_TERMS_PREFIX + normVersion(version), false);
+    }
+
+    public void acceptTerms(String version, boolean accepted) {
+        prefs.edit().putBoolean(KEY_TERMS_PREFIX + normVersion(version), accepted).apply();
     }
 
     public boolean isPrivacyAccepted(String version) {
-        return prefs.getBoolean("accepted_privacy_" + version, false);
+        return prefs.getBoolean(KEY_PRIVACY_PREFIX + normVersion(version), false);
     }
 
-    public boolean isAllAccepted(String version) {
-        return isTermsAccepted(version) && isPrivacyAccepted(version);
+    public void acceptPrivacy(String version, boolean accepted) {
+        prefs.edit().putBoolean(KEY_PRIVACY_PREFIX + normVersion(version), accepted).apply();
     }
+
+    public void clearAll() { prefs.edit().clear().apply(); }
 }

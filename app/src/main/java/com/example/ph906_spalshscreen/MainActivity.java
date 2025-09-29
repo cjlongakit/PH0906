@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -89,14 +90,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void updateNavigationHeader() {
         if (navigationView != null) {
-            TextView tvName = navigationView.getHeaderView(0).findViewById(R.id.nav_username);
-            TextView tvId = navigationView.getHeaderView(0).findViewById(R.id.nav_student_id);
+            View header = null;
+            try { header = navigationView.getHeaderView(0); } catch (Exception ignored) {}
+            if (header == null) {
+                try { header = navigationView.inflateHeaderView(R.layout.nav_header); } catch (Exception ignored) {}
+            }
+            if (header != null) {
+                TextView tvName = header.findViewById(R.id.nav_username);
+                TextView tvId = header.findViewById(R.id.nav_student_id);
 
-            String fullName = apiClient.getFullName();
-            String studentId = apiClient.getLoggedInStudentId();
+                String fullName = apiClient.getFullName();
+                String studentId = apiClient.getLoggedInStudentId();
 
-            if (tvName != null) tvName.setText(fullName != null ? fullName : "Unknown User");
-            if (tvId != null) tvId.setText(studentId != null ? "ID: " + studentId : "ID: N/A");
+                if (tvName != null) tvName.setText(fullName != null ? fullName : "Unknown User");
+                if (tvId != null) tvId.setText(studentId != null ? "ID: " + studentId : "ID: N/A");
+            }
         }
     }
 

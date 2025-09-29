@@ -40,30 +40,40 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
         String address = safeText(letter.getAddress());
         String type = safeText(letter.getType());
         String deadline = safeText(letter.getDeadline());
-        String status = safeText(letter.getStatus());
+        String rawStatus = safeText(letter.getStatus());
 
         holder.tvPh906.setText(ph906);
         holder.tvFullName.setText(fullName);
         holder.tvAddress.setText(address);
         holder.tvType.setText(type);
         holder.tvDeadline.setText(deadline);
-        holder.tvStatus.setText(status);
+        holder.tvStatus.setText(rawStatus);
 
-        // ✅ Decide background color based on status
+        // ✅ Normalize status then decide color
+        String status = normalizeStatus(rawStatus);
         int colorRes;
-        switch (status.toUpperCase()) {
+        switch (status) {
             case "ON HAND":
                 colorRes = R.color.statusOnHand;
                 break;
             case "OUTDATED":
                 colorRes = R.color.statusOutdated;
                 break;
-            case "TURNED IN":
+            case "TURNED IN":       // standard
+            case "TURN IN":         // common variant from backend/UI
+            case "TURNED-IN":
+            case "TURN-IN":
+            case "TURNEDIN":
+            case "TURNIN":
                 colorRes = R.color.statusTurnedIn;
                 break;
             case "TURN IN LATE":
+            case "TURN-IN LATE":
+            case "TURNED IN LATE":
+            case "TURNED-IN LATE":
                 colorRes = R.color.statusLate;
                 break;
+            case "PENDING":
             default:
                 colorRes = R.color.statusPending;
                 break;
@@ -100,5 +110,14 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
     // ✅ Helper method: avoid null text
     private String safeText(String text) {
         return (text == null || text.trim().isEmpty()) ? "N/A" : text;
+    }
+
+    // ✅ Normalize status for robust matching
+    private String normalizeStatus(String s) {
+        if (s == null) return "";
+        String x = s.trim().toUpperCase();
+        x = x.replace('_', ' ').replace('-', ' ');
+        x = x.replaceAll("\\s+", " ");
+        return x;
     }
 }
