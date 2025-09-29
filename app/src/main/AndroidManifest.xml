@@ -5,6 +5,10 @@
 
     <!-- network permission if your API calls need Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PH906_spalshscreen"
         tools:targetApi="31">
+
+        <!-- FileProvider for camera capture -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <!-- Always land here first -->
         <activity
@@ -51,6 +66,7 @@
         <!-- Your existing ForgotPasswordActivity, etc. -->
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".ChangePasswordActivity" />
+        <activity android:name=".ui.profile.EditProfileActivity" android:exported="false" />
 
 
     </application>

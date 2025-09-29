@@ -1,15 +1,19 @@
 package com.example.ph906_spalshscreen.api;
 
 import android.content.Context;
+import android.net.Uri;
+import android.provider.OpenableColumns;
 import com.example.ph906_spalshscreen.PrefsHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
+import okio.BufferedSink;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -23,6 +27,7 @@ public class ApiClient {
 
     private final OkHttpClient client;
     private final PrefsHelper prefsHelper;
+    private final Context appContext;
 
     public ApiClient(Context context) {
         client = new OkHttpClient.Builder()
@@ -31,6 +36,7 @@ public class ApiClient {
                 .build();
 
         prefsHelper = new PrefsHelper(context);
+        appContext = context.getApplicationContext();
     }
 
     // ==============================
@@ -259,4 +265,131 @@ public class ApiClient {
             }
         });
     }
+    // ==============================
+// UPDATE MASTERLIST ENTRY
+// ==============================
+    /**
+     * Updates a specific masterlist record.
+     * @param studentId the ph906 / user id
+     * @param payload   the JSON with updated fields
+     * @param callback  your callback
+     */
+    public void updateMasterlist(String studentId, JSONObject payload, ApiCallback callback) {
+        String token = prefsHelper.getToken(); // if you require auth header
+        // build your endpoint URL; adjust .php vs REST as needed
+        String url = BASE_URL + "/masterlist/" + studentId;
+
+        RequestBody body = RequestBody.create(payload.toString(), JSON);
+        Request.Builder builder = new Request.Builder()
+                .url(url)
+                .addHeader("Accept", "application/json")
+                .put(body); // HTTP PUT
+
+        // include Authorization header if your backend expects token
+        if (token != null && !token.isEmpty()) {
+            builder.addHeader("Authorization", token);
+        }
+
+        client.newCall(builder.build()).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                callback.onError("Network error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String res = response.body() != null ? response.body().string() : "";
+                try {
+                    JSONObject jsonResponse = new JSONObject(res);
+                    // Adjust according to your backend's success field
+                    if ("success".equalsIgnoreCase(jsonResponse.optString("status"))) {
+                        callback.onSuccess(jsonResponse);
+                    } else {
+                        callback.onError(jsonResponse.optString("message", "Update failed"));
+                    }
+                } catch (JSONException e) {
+                    callback.onError("JSON parse error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    /**
+     * Uploads a profile photo for the currently logged-in student.
+     * Endpoint: POST {BASE_URL}/upload_profile_photo.php
+     * Form fields: ph906 (digits only), photo (file)
+     * Returns JSON with {status, url}
+     */
+    public void uploadProfilePhoto(Uri imageUri, ApiCallback callback) {
+        if (imageUri == null) {
+            callback.onError("No image selected");
+            return;
+        }
+        String rawId = prefsHelper.getPh906();
+        if (rawId == null || rawId.trim().isEmpty()) {
+            callback.onError("No student id in session");
+            return;
+        }
+        String digits = rawId.replaceAll("[^0-9]", "");
+
+        String fileName = queryDisplayName(imageUri);
+        if (fileName == null || fileName.isEmpty()) fileName = "profile.jpg";
+
+        RequestBody fileBody = new RequestBody() {
+            @Override public MediaType contentType() { return MediaType.parse("image/*"); }
+            @Override public void writeTo(BufferedSink sink) throws IOException {
+                try (java.io.InputStream is = appContext.getContentResolver().openInputStream(imageUri)) {
+                    if (is == null) throw new IOException("Cannot open imageUri");
+                    byte[] buffer = new byte[8192];
+                    int read;
+                    while ((read = is.read(buffer)) != -1) {
+                        sink.write(buffer, 0, read);
+                    }
+                }
+            }
+        };
+
+        MultipartBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("ph906", digits)
+                .addFormDataPart("photo", fileName, fileBody)
+                .build();
+
+        Request.Builder reqBuilder = new Request.Builder()
+                .url(BASE_URL + "/upload_profile_photo.php")
+                .post(requestBody)
+                .addHeader("Accept", "application/json");
+        String token = prefsHelper.getToken();
+        if (token != null && !token.isEmpty()) reqBuilder.addHeader("Authorization", token);
+
+        client.newCall(reqBuilder.build()).enqueue(new Callback() {
+            @Override public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                callback.onError("Upload failed: " + e.getMessage());
+            }
+            @Override public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String body = response.body() != null ? response.body().string() : "";
+                try {
+                    JSONObject json = new JSONObject(body);
+                    if ("success".equalsIgnoreCase(json.optString("status"))) {
+                        callback.onSuccess(json);
+                    } else {
+                        callback.onError(json.optString("message", "Upload failed"));
+                    }
+                } catch (JSONException e) {
+                    callback.onError("JSON parse error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private String queryDisplayName(Uri uri) {
+        try (android.database.Cursor c = appContext.getContentResolver().query(uri, null, null, null, null)) {
+            if (c != null && c.moveToFirst()) {
+                int idx = c.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (idx >= 0) return c.getString(idx);
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
 }

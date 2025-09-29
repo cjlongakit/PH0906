@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="blue">#0A2A66</color>
-    <color name="light_blue">#1976D2</color>
+    <color name="colorPrimary">#0A2A66</color>
+    <color name="colorPrimaryDark">#021633</color>
+    <color name="colorAccent">#2196F3</color>
+    <color name="colorBackground">#F5F5F5</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorText">#000000</color>
+    <color name="colorTextLight">#666666</color>
+    <color name="colorSuccess">#4CAF50</color>
+    <color name="colorError">#FF5252</color>
 
-    <!-- Status Colors -->
-    <color name="statusPending">#757575</color>
-    <color name="statusOnHand">#1976D2</color>
-    <color name="statusOutdated">#D32F2F</color>
-    <color name="statusTurnedIn">#28A745</color>
-    <color name="statusLate">#FF9800</color>
+    <!-- Status colors (used by letters and status backgrounds) -->
+    <color name="statusOnHand">#1976D2</color>       <!-- Blue -->
+    <color name="statusOutdated">#D32F2F</color>     <!-- Red -->
+    <color name="statusTurnedIn">#388E3C</color>     <!-- Green -->
+    <color name="statusLate">#F57C00</color>        <!-- Orange -->
+    <color name="statusPending">#9E9E9E</color>      <!-- Grey -->
 </resources>

@@ -53,7 +53,7 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="@string/dashboard"
-        android:backgroundTint="@color/blue"
+        android:backgroundTint="@color/colorAccent"
         android:textAllCaps="true"
         android:textColor="@android:color/white"
         android:layout_marginTop="24dp"
@@ -79,10 +79,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/btn_letters"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="8dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

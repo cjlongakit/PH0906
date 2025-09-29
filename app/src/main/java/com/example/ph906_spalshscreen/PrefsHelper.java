@@ -13,6 +13,7 @@ public class PrefsHelper {
     private static final String KEY_VERSION = "version"; // minor/adult
     private static final String KEY_IS_DEFAULT_PASSWORD = "is_default_password";
     private static final String KEY_IS_LOGGED_IN = "is_logged_in";
+    private static final String KEY_PROFILE_PHOTO_URI = "profile_photo_uri";
 
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
@@ -42,6 +43,11 @@ public class PrefsHelper {
         editor.apply();
     }
 
+    public void saveProfilePhotoUri(String uri) {
+        editor.putString(KEY_PROFILE_PHOTO_URI, uri);
+        editor.apply();
+    }
+
     // ===== Getters =====
     public String getPh906() {
         return prefs.getString(KEY_PH906, null);
@@ -65,6 +71,10 @@ public class PrefsHelper {
 
     public String getVersion() {
         return prefs.getString(KEY_VERSION, "minor");
+    }
+
+    public String getProfilePhotoUri() {
+        return prefs.getString(KEY_PROFILE_PHOTO_URI, null);
     }
 
     // ===== Session check =====

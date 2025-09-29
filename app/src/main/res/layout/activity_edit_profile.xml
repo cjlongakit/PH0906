@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/colorPrimaryDark">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header with ID and Photo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="12dp">
+
+            <ImageView
+                android:id="@+id/img_profile_edit"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                app:srcCompat="@drawable/rodeney"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/profile_picture_desc"
+                android:background="@drawable/rounded_card"
+                android:padding="2dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tv_user_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PH906-000"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorWhite"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnChoosePhoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Choose Photo"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="@color/colorAccent"
+                    android:layout_marginEnd="8dp"/>
+                <Button
+                    android:id="@+id/btnTakePhoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Take Photo"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="@color/colorAccent"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Card container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card"
+            android:padding="16dp"
+            android:layout_margin="8dp">
+
+            <!-- Personal Information Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Personal Information"
+                android:textColor="#0A2A66"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginBottom="12dp"/>
+
+            <EditText
+                android:id="@+id/et_first_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="First Name"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/et_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Last Name"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/et_sex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Sex (M/F)"
+                android:maxLength="1"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/et_birthdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Birthdate (YYYY-MM-DD)"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/et_age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Age"
+                android:inputType="number"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/et_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nickname"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/et_mobile_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Mobile Number"
+                android:inputType="phone"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/et_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Address"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="12dp"/>
+
+            <EditText
+                android:id="@+id/et_caseworker_assigned"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Caseworker Assigned"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Guardian Information Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Guardian Information"
+                android:textColor="#0A2A66"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginBottom="12dp"/>
+
+            <EditText
+                android:id="@+id/et_guardian_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Guardian Name"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/et_guardian_mobile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Guardian Mobile"
+                android:inputType="phone"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/et_water_baptized"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Water Baptized (Yes/No)"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- School Information Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="School Information"
+                android:textColor="#0A2A66"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginBottom="12dp"/>
+
+            <EditText
+                android:id="@+id/et_teacher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Teacher Name"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Buttons row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Save"
+                    android:textColor="@color/colorWhite"
+                    android:backgroundTint="@color/colorSuccess"
+                    android:layout_marginEnd="8dp"/>
+
+                <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Cancel"
+                    android:textColor="@color/colorWhite"
+                    android:backgroundTint="@color/colorError"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

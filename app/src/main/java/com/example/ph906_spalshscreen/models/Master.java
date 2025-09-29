@@ -63,6 +63,15 @@ public class Master {
     public String getBirthday() { return birthday; }
     public int getAge() { return age; }
     public String getCaseworkerAssigned() { return caseworkerAssigned; }
+
+    public String getName() {
+        return firstName + " " + lastName;
+    }
+
+    public String getDetails() {
+        return "Sex: " + sex + " | Age: " + age + " | Address: " + address;
+    }
+
     public String getTeacher() { return teacher; }
     public String getMobile() { return mobile; }
     public String getNickname() { return nickname; }

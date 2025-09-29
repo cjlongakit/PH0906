@@ -13,6 +13,6 @@
     <string name="terms_adult">Full Terms &amp; Service for adults…</string>
     <string name="terms_minor">Simplified Terms for minors…</string>
     <!-- Privacy Policy -->
-    <string name="privacy_adult">Privacy Policy (Adult) …</string><string name="privacy_minor">Privacy Policy (Minor) …</string>
-
+    <string name="privacy_adult">Privacy Policy (Adult) …</string>
+    <string name="privacy_minor">Privacy Policy (Minor) …</string>
 </resources>

@@ -9,283 +9,205 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
-        android:gravity="center_horizontal">
+        android:padding="16dp">
 
-        <!-- Profile Picture -->
-        <ImageView
-            android:id="@+id/img_profile"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@drawable/rodeney"
-            android:background="@drawable/account_circle"
-            android:padding="4dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="Profile Picture"
-            android:layout_marginBottom="12dp" />
-
-        <!-- User ID -->
-        <TextView
-            android:id="@+id/tv_user_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PH906-0700"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Personal Info Card -->
+        <!-- Header Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/rounded_card"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp">
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
+
+            <ImageView
+                android:id="@+id/img_profile"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/rodeney"
+                android:background="@drawable/account_circle"
+                android:padding="4dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="Profile Picture"
+                android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tv_user_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Personal Information"
-                android:textColor="#0A2A66"
+                android:text="PH906-0700"
+                android:textSize="24sp"
                 android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginBottom="12dp"/>
-
-            <!-- First Name -->
-            <TextView
-                android:id="@+id/tv_first_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="First Name"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
-
-            <EditText
-                android:id="@+id/et_first_name"
-                style="@style/ProfileEditText"
-                android:hint="First Name"
-                android:visibility="gone"/>
-
-            <!-- Last Name -->
-            <TextView
-                android:id="@+id/tv_last_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Last Name"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
-
-            <EditText
-                android:id="@+id/et_last_name"
-                style="@style/ProfileEditText"
-                android:hint="Last Name"
-                android:visibility="gone"/>
-
-            <!-- Birthdate -->
-            <TextView
-                android:id="@+id/tv_birthdate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Birthdate"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
-
-            <EditText
-                android:id="@+id/et_birthdate"
-                style="@style/ProfileEditText"
-                android:hint="Birthdate"
-                android:focusable="false"
-                android:clickable="true"
-                android:visibility="gone"/>
-
-            <!-- Nickname -->
-            <TextView
-                android:id="@+id/tv_nickname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Nickname"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
-
-            <EditText
-                android:id="@+id/et_nickname"
-                style="@style/ProfileEditText"
-                android:hint="Nickname"
-                android:visibility="gone"/>
-
-            <!-- Mobile -->
-            <TextView
-                android:id="@+id/tv_mobile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Mobile Number"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
-
-            <EditText
-                android:id="@+id/et_mobile"
-                style="@style/ProfileEditText"
-                android:hint="Mobile Number"
-                android:visibility="gone"/>
-
-            <!-- Address -->
-            <TextView
-                android:id="@+id/tv_address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Address"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
-
-            <EditText
-                android:id="@+id/et_address"
-                style="@style/ProfileEditText"
-                android:hint="Address"
-                android:visibility="gone"/>
+                android:textColor="@android:color/white"/>
         </LinearLayout>
 
+        <!-- Personal Info Card -->
+
         <!-- Guardian Info Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/rounded_card"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp">
+
+        <LinearLayout style="@style/ProfileCard">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Guardian Information"
-                android:textColor="#0A2A66"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginBottom="12dp"/>
+                style="@style/CardTitle"
+                android:text="Personal Information" />
 
-            <!-- Guardian Name -->
+            <LinearLayout style="@style/FieldContainer">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="First Name" />
+
+                <TextView
+                    android:id="@+id/tv_first_name"
+                    style="@style/FieldValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/FieldContainer">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Last Name" />
+
+                <TextView
+                    android:id="@+id/tv_last_name"
+                    style="@style/FieldValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/FieldContainer">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Sex" />
+
+                <TextView
+                    android:id="@+id/tv_sex"
+                    style="@style/FieldValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/FieldContainer">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Birthdate" />
+
+                <TextView
+                    android:id="@+id/tv_birthdate"
+                    style="@style/FieldValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/FieldContainer">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Age" />
+
+                <TextView
+                    android:id="@+id/tv_age"
+                    style="@style/FieldValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/FieldContainer">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Nickname" />
+
+                <TextView
+                    android:id="@+id/tv_nickname"
+                    style="@style/FieldValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/FieldContainer">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Mobile Number" />
+
+                <TextView
+                    android:id="@+id/tv_mobile"
+                    style="@style/FieldValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/FieldContainer">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Address" />
+
+                <TextView
+                    android:id="@+id/tv_address"
+                    style="@style/FieldValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/FieldContainer">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Caseworker" />
+
+                <TextView
+                    android:id="@+id/tv_caseworker"
+                    style="@style/FieldValue" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout style="@style/ProfileCard">
             <TextView
-                android:id="@+id/tv_guardian"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Guardian Name"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
+                style="@style/CardTitle"
+                android:text="Guardian Information" />
 
-            <EditText
-                android:id="@+id/et_guardian"
-                style="@style/ProfileEditText"
-                android:hint="Guardian Name"
-                android:visibility="gone"/>
+            <LinearLayout style="@style/FieldContainer">
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Guardian Name" />
+                <TextView
+                    android:id="@+id/tv_guardian"
+                    style="@style/FieldValue" />
+            </LinearLayout>
 
-            <!-- Guardian Mobile -->
-            <TextView
-                android:id="@+id/tv_guardian_mobile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Guardian Mobile"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
+            <LinearLayout style="@style/FieldContainer">
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Guardian Mobile" />
+                <TextView
+                    android:id="@+id/tv_guardian_mobile"
+                    style="@style/FieldValue" />
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/et_guardian_mobile"
-                style="@style/ProfileEditText"
-                android:hint="Guardian Mobile"
-                android:visibility="gone"/>
-
-            <!-- Baptized -->
-            <TextView
-                android:id="@+id/tv_baptized"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Water Baptized: Yes"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
-
-            <EditText
-                android:id="@+id/et_baptized"
-                style="@style/ProfileEditText"
-                android:hint="Water Baptized (Yes/No)"
-                android:visibility="gone"/>
+            <LinearLayout style="@style/FieldContainer">
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Water Baptized" />
+                <TextView
+                    android:id="@+id/tv_baptized"
+                    style="@style/FieldValue" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- School Info Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/rounded_card"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp">
-
+        <LinearLayout style="@style/ProfileCard">
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="School Information"
-                android:textColor="#0A2A66"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginBottom="12dp"/>
+                style="@style/CardTitle"
+                android:text="School Information" />
 
-            <!-- Teacher -->
-            <TextView
-                android:id="@+id/tv_teacher"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Teacher Name"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
-
-            <EditText
-                android:id="@+id/et_teacher"
-                style="@style/ProfileEditText"
-                android:hint="Teacher Name"
-                android:visibility="gone"/>
+            <LinearLayout style="@style/FieldContainer">
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="Teacher Name" />
+                <TextView
+                    android:id="@+id/tv_teacher"
+                    style="@style/FieldValue" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Action Buttons -->
-        <LinearLayout
-            android:id="@+id/layoutEditButtons"
+        <!-- Edit Button -->
+        <Button
+            android:id="@+id/btn_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="20dp">
+            android:text="Edit Profile"
+            android:layout_margin="16dp"
+            style="@style/ActionButton"
+            android:backgroundTint="#2196F3"/>
 
-            <Button
-                android:id="@+id/btnEdit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Edit"
-                android:background="@drawable/rounded_button"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#6C63FF"
-                android:layout_marginEnd="8dp"/>
-
-            <Button
-                android:id="@+id/btnSave"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Save"
-                android:background="@drawable/rounded_button"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#4CAF50"
-                android:layout_marginEnd="8dp"
-                android:visibility="gone"/>
-
-            <Button
-                android:id="@+id/btnCancel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Cancel"
-                android:background="@drawable/rounded_button"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#FF5C5C"
-                android:visibility="gone"/>
-        </LinearLayout>
     </LinearLayout>
 </ScrollView>

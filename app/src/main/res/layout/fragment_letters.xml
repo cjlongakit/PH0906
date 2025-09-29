@@ -36,7 +36,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:text="⚙"
-            android:backgroundTint="@color/blue"
+            android:backgroundTint="@color/colorAccent"
             android:textColor="@android:color/white" />
     </LinearLayout>
 
