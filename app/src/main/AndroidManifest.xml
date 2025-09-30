@@ -10,8 +10,11 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
 
+    <!-- Declare camera feature as optional to resolve lint error -->
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+
     <application
-        android:name=".App"
+        android:label="@string/app_name"
         android:allowBackup="true"
         android:icon="@drawable/ph906"
         android:roundIcon="@drawable/ph906"
@@ -67,6 +70,7 @@
         <!-- Your existing ForgotPasswordActivity, etc. -->
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".ChangePasswordActivity" />
+
         <activity android:name=".ui.profile.EditProfileActivity" android:exported="false" />
 
 

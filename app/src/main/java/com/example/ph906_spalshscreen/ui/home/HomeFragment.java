@@ -19,7 +19,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.example.ph906_spalshscreen.DashboardFragment;
+import com.example.ph906_spalshscreen.ui.calendar.DashboardFragment;
 import com.example.ph906_spalshscreen.PrefsHelper;
 import com.example.ph906_spalshscreen.R;
 import com.example.ph906_spalshscreen.api.ApiCallback;
@@ -114,7 +114,21 @@ public class HomeFragment extends Fragment {
             attemptGuessPhotoFromId(bustCacheOnce);
             return;
         }
-        loadWithGlide(url, bustCacheOnce, null);
+        // If the saved URL was deleted on the server, catch the failure and recover
+        loadWithGlide(url, bustCacheOnce, new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                // Clear bad URL and try to guess alternatives (bust cache once)
+                prefs.saveProfilePhotoUri("");
+                if (imgProfile != null) imgProfile.post(() -> attemptGuessPhotoFromId(true));
+                return true; // we handled the failure
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                return false; // keep default behavior
+            }
+        });
     }
 
     private void attemptGuessPhotoFromId(boolean bustCacheOnce) {
