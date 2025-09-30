@@ -58,7 +58,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="\nTerms And Agreements"
+                android:text="\nTerms And Agreements (Minor)"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 android:textSize="20sp"
