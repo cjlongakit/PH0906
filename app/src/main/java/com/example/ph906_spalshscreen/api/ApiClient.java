@@ -166,57 +166,77 @@ public class ApiClient {
     }
 
     // ==============================
-    // CHANGE PASSWORD
+    // CHANGE PASSWORD (robust endpoints)
     // ==============================
     public void changePassword(String currentPassword, String newPassword, ApiCallback callback) {
         String token = prefsHelper.getToken();
-        if (token == null) {
+        if (token == null || token.isEmpty()) {
             callback.onError("Not logged in");
             return;
         }
-
         try {
             JSONObject json = new JSONObject();
             json.put("current_password", currentPassword);
             json.put("new_password", newPassword);
 
-            RequestBody body = RequestBody.create(json.toString(), JSON);
-            Request request = new Request.Builder()
-                    .url(BASE_URL + "/change_password.php")
-                    .addHeader("Authorization", token)
-                    .addHeader("Accept", "application/json")
-                    .post(body)
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    callback.onError("Network error: " + e.getMessage());
-                }
-
-                @Override public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    String responseBody = response.body() != null ? response.body().string() : "";
-                    try {
-                        JSONObject jsonResponse = new JSONObject(responseBody);
-                        if ("success".equalsIgnoreCase(jsonResponse.optString("status"))) {
-                            // Update prefs: no longer default password
-                            prefsHelper.saveLoginInfo(
-                                    prefsHelper.getPh906(),
-                                    prefsHelper.getToken(),
-                                    prefsHelper.getFullName(),
-                                    false
-                            );
-                            callback.onSuccess(jsonResponse);
-                        } else {
-                            callback.onError(jsonResponse.optString("message", "Failed to change password (HTTP " + response.code() + ")"));
-                        }
-                    } catch (JSONException e) {
-                        callback.onError("JSON parse error (HTTP " + response.code() + "): " + e.getMessage());
-                    }
-                }
-            });
+            String[] endpoints = new String[] {
+                    "/change_password.php",
+                    "/changepassword.php",
+                    "/api.php?resource=change_password",
+                    "/api.php?resource=changepassword"
+            };
+            changePasswordTry(endpoints, 0, json, token, callback);
         } catch (JSONException e) {
             callback.onError("JSON creation error: " + e.getMessage());
         }
+    }
+
+    private void changePasswordTry(String[] endpoints, int idx, JSONObject json, String token, ApiCallback callback) {
+        if (idx >= endpoints.length) {
+            callback.onError("Change password failed on all endpoints");
+            return;
+        }
+        RequestBody body = RequestBody.create(json.toString(), JSON);
+        Request request = new Request.Builder()
+                .url(BASE_URL + endpoints[idx])
+                .addHeader("Authorization", token)
+                .addHeader("Accept", "application/json")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                changePasswordTry(endpoints, idx + 1, json, token, callback);
+            }
+            @Override public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = response.body() != null ? response.body().string() : "";
+                try {
+                    JSONObject jsonResponse = new JSONObject(responseBody);
+                    if (response.isSuccessful() && "success".equalsIgnoreCase(jsonResponse.optString("status"))) {
+                        // Update prefs: no longer default password
+                        prefsHelper.saveLoginInfo(
+                                prefsHelper.getPh906(),
+                                prefsHelper.getToken(),
+                                prefsHelper.getFullName(),
+                                false
+                        );
+                        callback.onSuccess(jsonResponse);
+                    } else {
+                        if (idx + 1 < endpoints.length) {
+                            changePasswordTry(endpoints, idx + 1, json, token, callback);
+                        } else {
+                            callback.onError(jsonResponse.optString("message", "Failed to change password (HTTP " + response.code() + ")"));
+                        }
+                    }
+                } catch (JSONException e) {
+                    if (idx + 1 < endpoints.length) {
+                        changePasswordTry(endpoints, idx + 1, json, token, callback);
+                    } else {
+                        callback.onError("JSON parse error (HTTP " + response.code() + "): " + e.getMessage());
+                    }
+                }
+            }
+        });
     }
 
     // ==============================
@@ -490,5 +510,115 @@ public class ApiClient {
         if (raw == null) return "";
         String d = raw.replaceAll("[^0-9]", "");
         return d == null ? "" : d;
+    }
+
+    // ==============================
+    // FORGOT / RESET PASSWORD
+    // ==============================
+    public void requestPasswordReset(String identifier, ApiCallback callback) {
+        try {
+            String id = identifier == null ? "" : identifier.trim();
+            JSONObject json = new JSONObject();
+            if (id.contains("@")) json.put("email", id); else json.put("ph906", id);
+
+            String[] endpoints = new String[] {
+                    "/request_password_reset.php",
+                    "/forgot_password.php",
+                    "/api.php?resource=request_password_reset",
+                    "/api.php?resource=forgot_password"
+            };
+            requestPasswordResetTry(endpoints, 0, json, callback);
+        } catch (JSONException e) {
+            callback.onError("JSON creation error: " + e.getMessage());
+        }
+    }
+
+    private void requestPasswordResetTry(String[] endpoints, int idx, JSONObject json, ApiCallback callback) {
+        if (idx >= endpoints.length) { callback.onError("Password reset request failed on all endpoints"); return; }
+        RequestBody body = RequestBody.create(json.toString(), JSON);
+        Request req = new Request.Builder()
+                .url(BASE_URL + endpoints[idx])
+                .addHeader("Accept", "application/json")
+                .post(body)
+                .build();
+        client.newCall(req).enqueue(new Callback() {
+            @Override public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                requestPasswordResetTry(endpoints, idx + 1, json, callback);
+            }
+            @Override public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String res = response.body() != null ? response.body().string() : "";
+                try {
+                    JSONObject jr = new JSONObject(res);
+                    if (response.isSuccessful() && "success".equalsIgnoreCase(jr.optString("status"))) {
+                        callback.onSuccess(jr);
+                    } else {
+                        if (idx + 1 < endpoints.length) {
+                            requestPasswordResetTry(endpoints, idx + 1, json, callback);
+                        } else {
+                            callback.onError(jr.optString("message", "Request failed (HTTP " + response.code() + ")"));
+                        }
+                    }
+                } catch (JSONException e) {
+                    if (idx + 1 < endpoints.length) {
+                        requestPasswordResetTry(endpoints, idx + 1, json, callback);
+                    } else {
+                        callback.onError("JSON parse error (HTTP " + response.code() + "): " + e.getMessage());
+                    }
+                }
+            }
+        });
+    }
+
+    public void resetPassword(String resetToken, String email, String newPassword, ApiCallback callback) {
+        try {
+            JSONObject json = new JSONObject();
+            if (resetToken != null && !resetToken.trim().isEmpty()) json.put("reset_token", resetToken);
+            if (email != null && !email.trim().isEmpty()) json.put("email", email.trim());
+            json.put("new_password", newPassword);
+
+            String[] endpoints = new String[] {
+                "/reset_password.php",
+                "/api.php?resource=reset_password"
+            };
+            resetPasswordTry(endpoints, 0, json, callback);
+        } catch (JSONException e) {
+            callback.onError("JSON creation error: " + e.getMessage());
+        }
+    }
+
+    private void resetPasswordTry(String[] endpoints, int idx, JSONObject json, ApiCallback callback) {
+        if (idx >= endpoints.length) { callback.onError("Reset password failed on all endpoints"); return; }
+        RequestBody body = RequestBody.create(json.toString(), JSON);
+        Request req = new Request.Builder()
+                .url(BASE_URL + endpoints[idx])
+                .addHeader("Accept", "application/json")
+                .post(body)
+                .build();
+        client.newCall(req).enqueue(new Callback() {
+            @Override public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                resetPasswordTry(endpoints, idx + 1, json, callback);
+            }
+            @Override public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String res = response.body() != null ? response.body().string() : "";
+                try {
+                    JSONObject jr = new JSONObject(res);
+                    if (response.isSuccessful() && "success".equalsIgnoreCase(jr.optString("status"))) {
+                        callback.onSuccess(jr);
+                    } else {
+                        if (idx + 1 < endpoints.length) {
+                            resetPasswordTry(endpoints, idx + 1, json, callback);
+                        } else {
+                            callback.onError(jr.optString("message", "Reset failed (HTTP " + response.code() + ")"));
+                        }
+                    }
+                } catch (JSONException e) {
+                    if (idx + 1 < endpoints.length) {
+                        resetPasswordTry(endpoints, idx + 1, json, callback);
+                    } else {
+                        callback.onError("JSON parse error (HTTP " + response.code() + "): " + e.getMessage());
+                    }
+                }
+            }
+        });
     }
 }

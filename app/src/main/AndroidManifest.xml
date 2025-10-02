@@ -67,9 +67,11 @@
             android:excludeFromRecents="true"
             android:exported="false" />
 
-        <!-- Your existing ForgotPasswordActivity, etc. -->
+        <!-- Forgot / Change / OTP / Reset -->
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".ChangePasswordActivity" />
+        <activity android:name=".OtpVerificationActivity" />
+        <activity android:name=".ResetPasswordActivity" />
 
         <activity android:name=".ui.profile.EditProfileActivity" android:exported="false" />
 

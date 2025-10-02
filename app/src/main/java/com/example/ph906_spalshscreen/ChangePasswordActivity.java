@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 public class ChangePasswordActivity extends AppCompatActivity {
 
-    private EditText etCurrentPassword, etNewPassword;
+    private EditText etCurrentPassword, etNewPassword, etConfirmPassword;
     private Button btnChangePassword;
     private ApiClient apiClient;
 
@@ -26,6 +26,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         // Init UI
         etCurrentPassword = findViewById(R.id.etCurrentPassword);
         etNewPassword = findViewById(R.id.etNewPassword);
+        etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnChangePassword = findViewById(R.id.btnChangePassword);
 
         // Init API client
@@ -34,18 +35,25 @@ public class ChangePasswordActivity extends AppCompatActivity {
         btnChangePassword.setOnClickListener(v -> {
             String currentPassword = etCurrentPassword.getText().toString().trim();
             String newPassword = etNewPassword.getText().toString().trim();
+            String confirm = etConfirmPassword.getText().toString().trim();
 
-            if (currentPassword.isEmpty() || newPassword.isEmpty()) {
-                Toast.makeText(this, "Please fill in both fields", Toast.LENGTH_SHORT).show();
+            if (currentPassword.isEmpty() || newPassword.isEmpty() || confirm.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!newPassword.equals(confirm)) {
+                Toast.makeText(this, "New password and confirm do not match", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (newPassword.length() < 4) {
+                Toast.makeText(this, "Password must be at least 4 characters", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             btnChangePassword.setEnabled(false);
             btnChangePassword.setText("Changing...");
 
-            // ==============================
-            // API Call: Change Password
-            // ==============================
+            // API Call: Change Password (server hashes securely)
             apiClient.changePassword(currentPassword, newPassword, new ApiCallback() {
                 @Override
                 public void onSuccess(JSONObject response) {
