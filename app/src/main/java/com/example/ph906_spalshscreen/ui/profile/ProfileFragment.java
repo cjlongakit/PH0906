@@ -38,6 +38,8 @@ public class ProfileFragment extends Fragment {
     private ApiClient apiClient;
     private PrefsHelper prefs;
 
+    private static final String BASE = "https://hjcdc.swuitapp.com"; // for normalizing relative URLs
+
     private final ActivityResultLauncher<Intent> editLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (!isAdded()) return;
@@ -149,12 +151,24 @@ public class ProfileFragment extends Fragment {
             // If backend includes photo_url, prefer it and save
             String apiPhotoUrl = obj.optString("photo_url", "").trim();
             if (!apiPhotoUrl.isEmpty()) {
-                prefs.saveProfilePhotoUri(apiPhotoUrl);
-                loadProfileImage(apiPhotoUrl, true); // cache-bust once
+                String normalized = normalizeUrl(apiPhotoUrl);
+                prefs.saveProfilePhotoUri(normalized);
+                loadProfileImage(normalized, true); // cache-bust once
             }
         } catch (Exception e) {
             Toast.makeText(getContext(), "Parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private String normalizeUrl(String url) {
+        if (url == null) return null;
+        String u = url.trim();
+        if (u.startsWith("http://") || u.startsWith("https://")) return u;
+        // If it already includes /api/, keep it; else prepend base + "/api"
+        if (u.startsWith("/")) {
+            return (u.startsWith("/api/") ? (BASE + u) : (BASE + "/api" + u));
+        }
+        return BASE + "/api/" + u;
     }
 
     private String firstNonEmpty(String a, String b) {
@@ -164,10 +178,11 @@ public class ProfileFragment extends Fragment {
 
     private void loadProfileImage(String url, boolean bustCache) {
         if (!isAdded()) return;
-        String toLoad = url;
+        String normalized = normalizeUrl(url);
+        String toLoad = normalized;
         if (bustCache) {
-            String sep = url.contains("?") ? "&" : "?";
-            toLoad = url + sep + "t=" + System.currentTimeMillis();
+            String sep = normalized.contains("?") ? "&" : "?";
+            toLoad = normalized + sep + "t=" + System.currentTimeMillis();
         }
         // Clear any pending request to avoid flicker/race
         try { Glide.with(this).clear(imgProfile); } catch (Exception ignored) {}

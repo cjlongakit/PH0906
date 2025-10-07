@@ -93,6 +93,7 @@ public class LettersFragment extends Fragment {
         apiClient.getMasterlist(new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
+                if (!isAdded()) return;
                 requireActivity().runOnUiThread(() -> {
                     Log.d(TAG, "API call succeeded: " + result.toString());
                     allLetters.clear();
@@ -114,6 +115,7 @@ public class LettersFragment extends Fragment {
 
             @Override
             public void onError(String errorMessage) {
+                if (!isAdded()) return;
                 requireActivity().runOnUiThread(() -> {
                     Log.e(TAG, "API call failed: " + errorMessage);
                     Toast.makeText(getContext(), "API error: " + errorMessage, Toast.LENGTH_LONG).show();
@@ -148,17 +150,16 @@ public class LettersFragment extends Fragment {
     }
 
     private void updateUI() {
+        if (!isAdded()) return;
         requireActivity().runOnUiThread(() -> {
             filteredLetters.clear();
             filteredLetters.addAll(allLetters);
             adapter.notifyDataSetChanged();
-            Toast.makeText(getContext(),
-                    "Loaded " + allLetters.size() + " letters from database",
-                    Toast.LENGTH_SHORT).show();
         });
     }
 
     private void showError(String message) {
+        if (!isAdded()) return;
         requireActivity().runOnUiThread(() ->
                 Toast.makeText(getContext(), "Failed to load letters: " + message,
                         Toast.LENGTH_LONG).show()
@@ -168,14 +169,14 @@ public class LettersFragment extends Fragment {
     private void filterLetters(String query) {
         filteredLetters.clear();
 
-        if (query.isEmpty()) {
+        if (query == null || query.isEmpty()) {
             filteredLetters.addAll(allLetters);
         } else {
             String lowerQuery = query.toLowerCase();
             for (Letter letter : allLetters) {
                 if (letter.getPh906().toLowerCase().contains(lowerQuery) ||
                         letter.getFullName().toLowerCase().contains(lowerQuery) ||
-                        letter.getStatus().toLowerCase().contains(lowerQuery) ||
+                        normalizeStatus(letter.getStatus()).contains(lowerQuery) ||
                         letter.getType().toLowerCase().contains(lowerQuery)) {
                     filteredLetters.add(letter);
                 }
@@ -193,12 +194,22 @@ public class LettersFragment extends Fragment {
         if (status.equals("ALL")) {
             filteredLetters.addAll(allLetters);
         } else {
+            String want = normalizeStatus(status);
             for (Letter letter : allLetters) {
-                if (letter.getStatus().equalsIgnoreCase(status)) {
+                if (normalizeStatus(letter.getStatus()).equals(want)) {
                     filteredLetters.add(letter);
                 }
             }
         }
         adapter.notifyDataSetChanged();
+    }
+
+    private String normalizeStatus(String s) {
+        if (s == null) return "";
+        String x = s.trim().toUpperCase();
+        x = x.replace('_', ' ').replace('-', ' ');
+        x = x.replaceAll("\\s+", " ");
+        if ("TURN IN".equals(x)) x = "TURNED IN";
+        return x;
     }
 }

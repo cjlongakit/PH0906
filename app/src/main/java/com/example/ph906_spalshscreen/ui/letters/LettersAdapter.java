@@ -22,6 +22,17 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
         this.letterList = letterList;
     }
 
+    // Helper requested by user: map status background drawables to color resources
+    // Note: Using only existing drawable resource names to prevent build errors.
+    private int getColorFromDrawable(int drawableRes) {
+        if (drawableRes == R.drawable.bg_status_onhand) return R.color.statusOnHand;
+        if (drawableRes == R.drawable.bg_status_outdated) return R.color.statusOutdated;
+        if (drawableRes == R.drawable.bg_status_turnin) return R.color.statusTurnedIn;
+        if (drawableRes == R.drawable.bg_status_late) return R.color.statusLate;
+        // default
+        return R.color.statusPending;
+    }
+
     @NonNull
     @Override
     public LetterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -61,16 +72,14 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
                 break;
             case "TURNED IN":       // standard
             case "TURN IN":         // common variant from backend/UI
-            case "TURNED-IN":
+            case "TURNED IN ":
             case "TURN-IN":
             case "TURNEDIN":
             case "TURNIN":
                 colorRes = R.color.statusTurnedIn;
                 break;
             case "TURN IN LATE":
-            case "TURN-IN LATE":
             case "TURNED IN LATE":
-            case "TURNED-IN LATE":
                 colorRes = R.color.statusLate;
                 break;
             case "PENDING":
@@ -118,6 +127,7 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
         String x = s.trim().toUpperCase();
         x = x.replace('_', ' ').replace('-', ' ');
         x = x.replaceAll("\\s+", " ");
+        if ("TURN IN".equals(x)) x = "TURNED IN";
         return x;
     }
 }

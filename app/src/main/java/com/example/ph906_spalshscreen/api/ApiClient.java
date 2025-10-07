@@ -11,7 +11,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import okio.BufferedSink;
@@ -85,7 +84,6 @@ public class ApiClient {
         attemptLoginOnEndpoint(endpoint, ph, bd, new ApiCallback() {
             @Override public void onSuccess(JSONObject response) { callback.onSuccess(response); }
             @Override public void onError(String message) {
-                // If looks like invalid/401, try next combo; otherwise try next endpoint first
                 String lower = message == null ? "" : message.toLowerCase(java.util.Locale.US);
                 if (lower.contains("invalid") || lower.contains("401")) {
                     attemptLoginCombos(combos, comboIdx + 1, endpoints, 0, callback);
@@ -147,8 +145,7 @@ public class ApiClient {
     private String toUsDate(String ymd) {
         try {
             if (ymd == null) return "";
-            // If already YYYY-MM-DD, convert to MM/DD/YYYY for tolerant retry
-            if (ymd.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            if (ymd.matches("\\d{4}-\\d{2}-\\d{2}")) { // YYYY-MM-DD -> MM/DD/YYYY
                 String[] p = ymd.split("-");
                 return p[1] + "/" + p[2] + "/" + p[0];
             }
@@ -301,11 +298,9 @@ public class ApiClient {
                 String res = response.body() != null ? response.body().string() : "";
                 try {
                     JSONObject jsonResponse = new JSONObject(res);
-                    // Accept only explicit success
-                    if (response.isSuccessful() && "success".equalsIgnoreCase(jsonResponse.optString("status"))) {
+                    if (isOkResponse(response, jsonResponse)) {
                         callback.onSuccess(jsonResponse);
                     } else {
-                        // Try next endpoint; if this was the last, surface detailed message
                         if (idx + 1 < endpoints.length) {
                             requestWithTokenFallback(endpoints, method, jsonBody, callback, idx + 1, opTag);
                         } else {
@@ -314,7 +309,6 @@ public class ApiClient {
                         }
                     }
                 } catch (JSONException e) {
-                    // If body wasn't valid JSON (e.g., empty or HTML), try next; else report with context
                     if (idx + 1 < endpoints.length) {
                         requestWithTokenFallback(endpoints, method, jsonBody, callback, idx + 1, opTag);
                     } else {
@@ -327,8 +321,23 @@ public class ApiClient {
         });
     }
 
+    private boolean isOkResponse(Response response, JSONObject json) {
+        // Accept various success shapes:
+        // 1) {"status":"success", ...}
+        if ("success".equalsIgnoreCase(json.optString("status"))) return true;
+        // 2) {"success":true, ...}
+        if (json.optBoolean("success", false)) return true;
+        // 3) HTTP 200 with a data payload
+        if (response.isSuccessful()) {
+            if (json.has("data")) return true;
+            // 4) some endpoints may return the object directly (e.g., have ph906 or first_name)
+            if (json.has("ph906") || json.has("first_name") || json.has("last_name")) return true;
+        }
+        return false;
+    }
+
     // ==============================
-    // GET MASTERLIST (LETTERS) — unchanged
+    // GET MASTERLIST (LETTERS)
     // ==============================
     public void getMasterlist(final ApiCallback callback) {
         String endpointUrl = BASE_URL + "/get_students.php";
@@ -356,7 +365,7 @@ public class ApiClient {
     }
 
     // ==============================
-    // UPDATE MASTERLIST ENTRY (id-based) — unchanged
+    // UPDATE MASTERLIST ENTRY (id-based)
     // ==============================
     public void updateMasterlist(String studentId, JSONObject payload, ApiCallback callback) {
         String token = prefsHelper.getToken(); // if you require auth header
@@ -569,11 +578,14 @@ public class ApiClient {
         });
     }
 
-    public void resetPassword(String resetToken, String email, String newPassword, ApiCallback callback) {
+    public void resetPassword(String resetToken, String emailOrPh906, String newPassword, ApiCallback callback) {
         try {
             JSONObject json = new JSONObject();
             if (resetToken != null && !resetToken.trim().isEmpty()) json.put("reset_token", resetToken);
-            if (email != null && !email.trim().isEmpty()) json.put("email", email.trim());
+            if (emailOrPh906 != null && !emailOrPh906.trim().isEmpty()) {
+                String id = emailOrPh906.trim();
+                if (id.contains("@")) json.put("email", id); else json.put("ph906", id);
+            }
             json.put("new_password", newPassword);
 
             String[] endpoints = new String[] {
@@ -622,3 +634,4 @@ public class ApiClient {
         });
     }
 }
+
