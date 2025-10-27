@@ -94,7 +94,8 @@
                     android:layout_weight="1"
                     android:hint="First Name"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Last Name -->
@@ -118,7 +119,8 @@
                     android:layout_weight="1"
                     android:hint="Last Name"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Sex -->
@@ -143,7 +145,8 @@
                     android:hint="M / F"
                     android:maxLength="1"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Birthdate -->
@@ -167,7 +170,8 @@
                     android:layout_weight="1"
                     android:hint="YYYY-MM-DD"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Age -->
@@ -192,7 +196,8 @@
                     android:hint="Age"
                     android:inputType="number"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Nickname -->
@@ -216,7 +221,8 @@
                     android:layout_weight="1"
                     android:hint="Nickname"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Mobile Number -->
@@ -241,7 +247,34 @@
                     android:hint="0917..."
                     android:inputType="phone"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
+            </LinearLayout>
+
+            <!-- Row: Email -->
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="Email" />
+
+                <EditText
+                    android:id="@+id/et_email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="email@example.com"
+                    android:inputType="textEmailAddress"
+                    android:background="@drawable/edit_text_background"
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Address -->
@@ -268,7 +301,8 @@
                     android:maxLines="4"
                     android:gravity="top|start"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Caseworker Assigned -->
@@ -292,7 +326,8 @@
                     android:layout_weight="1"
                     android:hint="Caseworker"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
         </LinearLayout>
 
@@ -328,7 +363,8 @@
                     android:layout_weight="1"
                     android:hint="Guardian Name"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Guardian Mobile -->
@@ -353,7 +389,8 @@
                     android:hint="09..."
                     android:inputType="phone"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
 
             <!-- Row: Water Baptized -->
@@ -377,7 +414,8 @@
                     android:layout_weight="1"
                     android:hint="Yes / No"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
         </LinearLayout>
 
@@ -413,7 +451,8 @@
                     android:layout_weight="1"
                     android:hint="Teacher Name"
                     android:background="@drawable/edit_text_background"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
         </LinearLayout>
 

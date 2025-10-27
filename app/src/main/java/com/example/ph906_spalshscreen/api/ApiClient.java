@@ -6,6 +6,7 @@ import android.provider.OpenableColumns;
 
 import com.example.ph906_spalshscreen.PrefsHelper;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -251,14 +252,51 @@ public class ApiClient {
     }
 
     public void updateMyProfile(JSONObject payload, ApiCallback callback) {
-        String digits = safeDigits(prefsHelper.getPh906());
-        String[] endpoints = new String[] {
-                "/api.php?resource=masterlist" + (digits.isEmpty() ? "" : "&ph906=" + digits),
-                "/api.php?route=masterlist"    + (digits.isEmpty() ? "" : "&ph906=" + digits),
-                "/api.php/masterlist"          + (digits.isEmpty() ? "" : "?ph906=" + digits),
-                "/masterlist.php"              + (digits.isEmpty() ? "" : "?ph906=" + digits)
+        // Build allowed fields payload for student_profile endpoint
+        JSONObject allowed = new JSONObject();
+        try {
+            copyIfPresent(payload, allowed, "mobile_number");
+            copyIfPresent(payload, allowed, "address");
+            copyIfPresent(payload, allowed, "guardian_name");
+            copyIfPresent(payload, allowed, "guardian_mobile");
+            copyIfPresent(payload, allowed, "nickname");
+            copyIfPresent(payload, allowed, "mobile");
+        } catch (Exception ignored) {}
+
+        // First try student_profile endpoints (token-based, no path param needed)
+        String[] studentEndpoints = new String[] {
+                "/api.php?resource=student_profile",
+                "/api.php?route=student_profile",
+                "/api.php/student_profile",
+                "/student_profile.php"
         };
-        requestWithTokenFallback(endpoints, "PUT", payload, callback, 0, "PUT masterlist");
+        requestWithTokenFallback(studentEndpoints, "PUT", allowed, new ApiCallback() {
+            @Override public void onSuccess(JSONObject res) { callback.onSuccess(res); }
+            @Override public void onError(String msg) {
+                // Fallback: try masterlist with PATH-style ph906
+                String digits = safeDigits(prefsHelper.getPh906());
+                if (digits.isEmpty()) { callback.onError(msg); return; }
+                String[] masterEndpoints = new String[] {
+                        "/api.php/masterlist/" + digits,
+                        "/masterlist.php/" + digits,
+                        "/api.php?resource=masterlist&ph906=" + digits
+                };
+                requestWithTokenFallback(masterEndpoints, "PUT", payload, new ApiCallback() {
+                    @Override public void onSuccess(JSONObject r2) { callback.onSuccess(r2); }
+                    @Override public void onError(String msg2) { callback.onError(msg2); }
+                }, 0, "PUT masterlist");
+            }
+        }, 0, "PUT student_profile");
+    }
+
+    private void copyIfPresent(JSONObject from, JSONObject to, String key) {
+        if (from == null || to == null) return;
+        if (from.has(key)) {
+            Object v = from.opt(key);
+            if (v != null && !(v instanceof JSONArray && ((JSONArray)v).length()==0)) {
+                try { to.put(key, v); } catch (JSONException ignored) {}
+            }
+        }
     }
 
     private void requestWithTokenFallback(String[] endpoints, String method, JSONObject jsonBody,
@@ -634,4 +672,3 @@ public class ApiClient {
         });
     }
 }
-

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- network permission if your API calls need Internet -->
+    <!-- Network & media permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
@@ -14,6 +14,7 @@
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
 
     <application
+        android:name=".PH906App"
         android:label="@string/app_name"
         android:allowBackup="true"
         android:icon="@drawable/ph906"
@@ -33,7 +34,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- Always land here first -->
+        <!-- Launcher -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -43,36 +44,14 @@
             </intent-filter>
         </activity>
 
-        <!-- Login screen -->
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
-
-        <!-- Main dashboard -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-
-        <!-- Terms & Agreements: no history so user can’t back-nav here -->
-        <activity
-            android:name=".TermsActivity"
-            android:noHistory="true"
-            android:excludeFromRecents="true"
-            android:exported="false" />
-
-        <!-- Privacy Policy: same as Terms -->
-        <activity
-            android:name=".PrivacyActivity"
-            android:noHistory="true"
-            android:excludeFromRecents="true"
-            android:exported="false" />
-
-        <!-- Forgot / Change / OTP / Reset -->
+        <activity android:name=".LoginActivity" android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".TermsActivity" android:noHistory="true" android:excludeFromRecents="true" android:exported="false" />
+        <activity android:name=".PrivacyActivity" android:noHistory="true" android:excludeFromRecents="true" android:exported="false" />
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".ChangePasswordActivity" />
         <activity android:name=".OtpVerificationActivity" />
         <activity android:name=".ResetPasswordActivity" />
-
         <activity android:name=".ui.profile.EditProfileActivity" android:exported="false" />
 
 

@@ -2,6 +2,7 @@ package com.example.ph906_spalshscreen.ui.profile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +31,7 @@ public class ProfileFragment extends Fragment {
 
     private TextView tvUserId, tvFirstName, tvLastName, tvBirthdate, tvNickname,
             tvMobile, tvAddress, tvGuardian, tvGuardianMobile, tvBaptized, tvTeacher,
-            tvSex, tvCaseworker, tvAge;
+            tvSex, tvCaseworker, tvAge, tvEmail;
     private Button btnEdit;
     private ImageView imgProfile;
 
@@ -42,13 +43,13 @@ public class ProfileFragment extends Fragment {
 
     private final ActivityResultLauncher<Intent> editLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (!isAdded()) return;
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    String savedUrl = prefs.getProfilePhotoUri();
-                    if (savedUrl != null && !savedUrl.isEmpty()) {
-                        loadProfileImage(savedUrl, true); // cache-bust to show new image immediately
+                if (result.getResultCode() == Activity.RESULT_OK && getContext() != null) {
+                    PrefsHelper prefs = new PrefsHelper(requireContext());
+                    String photoUri = prefs.getProfilePhotoUri();
+                    if (photoUri != null) {
+                        try { imgProfile.setImageURI(Uri.parse(photoUri)); } catch (Exception ignored) {}
                     }
-                    loadProfile(); // refresh profile fields too
+                    loadProfile();
                 }
             });
 
@@ -65,6 +66,7 @@ public class ProfileFragment extends Fragment {
         tvBirthdate = v.findViewById(R.id.tv_birthdate);
         tvNickname = v.findViewById(R.id.tv_nickname);
         tvMobile = v.findViewById(R.id.tv_mobile);
+        tvEmail = v.findViewById(R.id.tv_email);
         tvAddress = v.findViewById(R.id.tv_address);
         tvGuardian = v.findViewById(R.id.tv_guardian);
         tvGuardianMobile = v.findViewById(R.id.tv_guardian_mobile);
@@ -91,6 +93,21 @@ public class ProfileFragment extends Fragment {
         btnEdit.setOnClickListener(view -> {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
             intent.putExtra("ph906Id", ph906Raw);
+            // Pass current visible values to avoid clearing in EditProfileActivity
+            intent.putExtra("firstName", safe(tvFirstName));
+            intent.putExtra("lastName", safe(tvLastName));
+            intent.putExtra("birthdate", safe(tvBirthdate));
+            intent.putExtra("nickname", safe(tvNickname));
+            intent.putExtra("mobile", safe(tvMobile));
+            intent.putExtra("email", safe(tvEmail));
+            intent.putExtra("address", safe(tvAddress));
+            intent.putExtra("guardian", safe(tvGuardian));
+            intent.putExtra("guardianMobile", safe(tvGuardianMobile));
+            intent.putExtra("baptized", safe(tvBaptized));
+            intent.putExtra("teacher", safe(tvTeacher));
+            intent.putExtra("sex", safe(tvSex));
+            intent.putExtra("age", safe(tvAge));
+            intent.putExtra("caseworker", safe(tvCaseworker));
             editLauncher.launch(intent);
         });
 
@@ -136,7 +153,8 @@ public class ProfileFragment extends Fragment {
 
             String mobile = firstNonEmpty(obj.optString("mobile_number", ""), obj.optString("mobile", ""));
             set(tvMobile, mobile);
-
+            
+            set(tvEmail, obj.optString("email", ""));
             set(tvAddress,  obj.optString("address", ""));
             set(tvGuardian, obj.optString("guardian_name", ""));
             set(tvGuardianMobile, obj.optString("guardian_mobile", ""));
@@ -212,5 +230,9 @@ public class ProfileFragment extends Fragment {
             if ("null".equalsIgnoreCase(s)) s = "";
         }
         v.setText(s);
+    }
+
+    private String safe(TextView tv) {
+        return tv != null && tv.getText() != null ? tv.getText().toString() : "";
     }
 }

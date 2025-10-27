@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -43,7 +44,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private ImageView imgProfileEdit;
     private Button btnChoosePhoto, btnTakePhoto;
     private EditText etFirstName, etLastName, etBirthdate, etSex, etAge, etNickname,
-            etMobileNumber, etAddress, etCaseworkerAssigned, etGuardianName, etGuardianMobile,
+            etMobileNumber, etEmail, etAddress, etCaseworkerAssigned, etGuardianName, etGuardianMobile,
             etWaterBaptized, etTeacher;
     private Button btnSave, btnCancel;
 
@@ -123,7 +124,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         initializeViews();
         setupListeners();
-        loadExistingData();
+        loadExistingData(savedInstanceState);
     }
 
     private void initializeViews() {
@@ -139,6 +140,7 @@ public class EditProfileActivity extends AppCompatActivity {
         etAge = findViewById(R.id.et_age);
         etNickname = findViewById(R.id.et_nickname);
         etMobileNumber = findViewById(R.id.et_mobile_number);
+        etEmail = findViewById(R.id.et_email);
         etAddress = findViewById(R.id.et_address);
         etCaseworkerAssigned = findViewById(R.id.et_caseworker_assigned);
         etGuardianName = findViewById(R.id.et_guardian_name);
@@ -157,14 +159,14 @@ public class EditProfileActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> saveAllChanges());
     }
 
-    private void loadExistingData() {
+    private void loadExistingData(Bundle savedInstanceState) {
         // Load existing profile photo if any
         ph906 = getIntent().getStringExtra("ph906Id");
         if (ph906 == null) ph906 = "";
         tvUserId.setText(formatPh906(ph906));
 
         String photoUrl = prefsHelper.getProfilePhotoUri();
-        if (photoUrl != null && !photoUrl.isEmpty()) {
+        if (!TextUtils.isEmpty(photoUrl)) {
             try {
                 // Show last saved server url; use Glide to handle http/https
                 Glide.with(this)
@@ -175,20 +177,30 @@ public class EditProfileActivity extends AppCompatActivity {
             } catch (Exception ignored) {}
         }
 
-        // Prefill form fields (if Extras were provided by caller)
-        etFirstName.setText(getIntent().getStringExtra("firstName"));
-        etLastName.setText(getIntent().getStringExtra("lastName"));
-        etBirthdate.setText(getIntent().getStringExtra("birthdate"));
-        etNickname.setText(getIntent().getStringExtra("nickname"));
-        etMobileNumber.setText(getIntent().getStringExtra("mobile"));
-        etAddress.setText(getIntent().getStringExtra("address"));
-        etGuardianName.setText(getIntent().getStringExtra("guardian"));
-        etGuardianMobile.setText(getIntent().getStringExtra("guardianMobile"));
-        etWaterBaptized.setText(getIntent().getStringExtra("baptized"));
-        etTeacher.setText(getIntent().getStringExtra("teacher"));
-        etSex.setText(getIntent().getStringExtra("sex"));
-        etAge.setText(getIntent().getStringExtra("age"));
-        etCaseworkerAssigned.setText(getIntent().getStringExtra("caseworker"));
+        // Only prefill from extras on first creation to avoid overriding user edits on rotate
+        if (savedInstanceState == null) {
+            setIfNonEmpty(etFirstName, getIntent().getStringExtra("firstName"));
+            setIfNonEmpty(etLastName, getIntent().getStringExtra("lastName"));
+            setIfNonEmpty(etBirthdate, getIntent().getStringExtra("birthdate"));
+            setIfNonEmpty(etNickname, getIntent().getStringExtra("nickname"));
+            setIfNonEmpty(etMobileNumber, getIntent().getStringExtra("mobile"));
+            setIfNonEmpty(etEmail, getIntent().getStringExtra("email"));
+            setIfNonEmpty(etAddress, getIntent().getStringExtra("address"));
+            setIfNonEmpty(etGuardianName, getIntent().getStringExtra("guardian"));
+            setIfNonEmpty(etGuardianMobile, getIntent().getStringExtra("guardianMobile"));
+            setIfNonEmpty(etWaterBaptized, getIntent().getStringExtra("baptized"));
+            setIfNonEmpty(etTeacher, getIntent().getStringExtra("teacher"));
+            setIfNonEmpty(etSex, getIntent().getStringExtra("sex"));
+            setIfNonEmpty(etAge, getIntent().getStringExtra("age"));
+            setIfNonEmpty(etCaseworkerAssigned, getIntent().getStringExtra("caseworker"));
+        }
+    }
+
+    private void setIfNonEmpty(EditText et, String value) {
+        if (et == null) return;
+        if (!TextUtils.isEmpty(value)) {
+            et.setText(value);
+        }
     }
 
     private void checkPermissionsAndProceed(String action) {
@@ -324,6 +336,7 @@ public class EditProfileActivity extends AppCompatActivity {
             payload.put("teacher", etTeacher.getText().toString().trim());
             payload.put("nickname", etNickname.getText().toString().trim());
             payload.put("mobile_number", etMobileNumber.getText().toString().trim());
+            payload.put("email", etEmail.getText().toString().trim());
             payload.put("address", etAddress.getText().toString().trim());
             payload.put("guardian_name", etGuardianName.getText().toString().trim());
             payload.put("guardian_mobile", etGuardianMobile.getText().toString().trim());
@@ -364,4 +377,3 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 }
-

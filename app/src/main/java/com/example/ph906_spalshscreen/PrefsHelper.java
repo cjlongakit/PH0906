@@ -19,6 +19,10 @@ public class PrefsHelper {
     private static final String KEY_PROFILE_PHOTO_SERVER_URL = "profile_photo_server_url";
     private static final String KEY_PROFILE_PHOTO_LOCAL_URI = "profile_photo_local_uri";
 
+    // New: signatures for notifications
+    private static final String KEY_LAST_LETTERS_SIG = "last_letters_sig";
+    private static final String KEY_LAST_EVENTS_SIG = "last_events_sig";
+
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
 
@@ -71,18 +75,11 @@ public class PrefsHelper {
         editor.apply();
     }
 
-    public String getServerPhotoUrl() {
-        return prefs.getString(KEY_PROFILE_PHOTO_SERVER_URL, null);
-    }
+    public String getServerPhotoUrl() { return prefs.getString(KEY_PROFILE_PHOTO_SERVER_URL, null); }
 
-    public void saveLocalPhotoUri(String uri) {
-        editor.putString(KEY_PROFILE_PHOTO_LOCAL_URI, uri);
-        editor.apply();
-    }
+    public void saveLocalPhotoUri(String uri) { editor.putString(KEY_PROFILE_PHOTO_LOCAL_URI, uri).apply(); }
 
-    public String getLocalPhotoUri() {
-        return prefs.getString(KEY_PROFILE_PHOTO_LOCAL_URI, null);
-    }
+    public String getLocalPhotoUri() { return prefs.getString(KEY_PROFILE_PHOTO_LOCAL_URI, null); }
 
     // ===== Getters =====
     public String getPh906() { return prefs.getString(KEY_PH906, null); }
@@ -96,4 +93,11 @@ public class PrefsHelper {
     public boolean isLoggedIn() { return prefs.getBoolean(KEY_IS_LOGGED_IN, false); }
 
     public void clearAll() { editor.clear().apply(); }
+
+    // ===== Notification signatures =====
+    public void saveLastLettersSig(String sig) { editor.putString(KEY_LAST_LETTERS_SIG, sig).apply(); }
+    public String getLastLettersSig() { return prefs.getString(KEY_LAST_LETTERS_SIG, null); }
+
+    public void saveLastEventsSig(String sig) { editor.putString(KEY_LAST_EVENTS_SIG, sig).apply(); }
+    public String getLastEventsSig() { return prefs.getString(KEY_LAST_EVENTS_SIG, null); }
 }

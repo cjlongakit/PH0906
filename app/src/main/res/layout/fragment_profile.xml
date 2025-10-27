@@ -201,6 +201,30 @@
                     android:ellipsize="end" />
             </LinearLayout>
 
+            <!-- Row: Email -->
+            <LinearLayout
+                style="@style/FieldContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="Email" />
+
+                <TextView
+                    android:id="@+id/tv_email"
+                    style="@style/FieldValue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <!-- Row: Address -->
             <LinearLayout
                 style="@style/FieldContainer"
                 android:orientation="horizontal"
