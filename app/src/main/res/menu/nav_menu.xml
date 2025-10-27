@@ -11,6 +11,45 @@
             android:id="@+id/nav_profile"
             android:icon="@android:drawable/ic_menu_edit"
             android:title="Profile" />
+
+        <!-- Terms & Agreements dropdown -->
+        <item
+            android:id="@+id/nav_terms_menu"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="Terms &amp; Agreements"
+            android:checkable="false">
+            <menu>
+                <item
+                    android:id="@+id/nav_terms_minor"
+                    android:title="Terms &amp; Agreements (Minor)" />
+                <item
+                    android:id="@+id/nav_terms_adult"
+                    android:title="Terms &amp; Agreements (Adult)" />
+            </menu>
+        </item>
+
+        <!-- Data Privacy dropdown -->
+        <item
+            android:id="@+id/nav_privacy_menu"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="Data Privacy"
+            android:checkable="false">
+            <menu>
+                <item
+                    android:id="@+id/nav_privacy_minor"
+                    android:title="Data Privacy (Minor)" />
+                <item
+                    android:id="@+id/nav_privacy_adult"
+                    android:title="Data Privacy (Adult)" />
+            </menu>
+        </item>
+
+        <!-- About (kept as simple item) -->
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="About" />
+
         <!-- Settings -->
         <item
             android:id="@+id/nav_settings"
@@ -21,9 +60,6 @@
                     android:id="@+id/nav_change_password"
                     android:icon="@android:drawable/ic_menu_manage"
                     android:title="Change Password" />
-                <item
-                    android:id="@+id/nav_about"
-                    android:title="About" />
             </menu>
         </item>
 
