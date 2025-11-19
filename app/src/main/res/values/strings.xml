@@ -15,4 +15,5 @@
     <!-- Privacy Policy -->
     <string name="privacy_adult">Privacy Policy (Adult) …</string>
     <string name="privacy_minor">Privacy Policy (Minor) …</string>
+    <string name="total_letters">TOTAL LETTERS</string>
 </resources>

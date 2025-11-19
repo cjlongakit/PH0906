@@ -76,19 +76,18 @@
                 android:text="PENDING"
                 android:textColor="@android:color/white"
                 app:strokeColor="@android:color/white"
-                app:strokeWidth="2dp"
-                android:layout_marginEnd="8dp" />
+                app:strokeWidth="2dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnOnHand"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="ON HAND"
                 android:textColor="@android:color/white"
                 app:strokeColor="@android:color/white"
-                app:strokeWidth="2dp"
-                android:layout_marginEnd="8dp" />
+                app:strokeWidth="2dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnTurnedIn"
