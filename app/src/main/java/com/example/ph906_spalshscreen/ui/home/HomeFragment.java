@@ -32,7 +32,7 @@ public class HomeFragment extends Fragment {
 
     private ImageView imgProfile;
     private TextView tvUsername;
-    private Button btnDashboard, btnLetters;
+    private Button btnEvents, btnLetters;
 
     private PrefsHelper prefs;
     private ApiClient api;
@@ -45,7 +45,7 @@ public class HomeFragment extends Fragment {
 
         imgProfile = v.findViewById(R.id.img_profile);
         tvUsername = v.findViewById(R.id.tv_username);
-        btnDashboard = v.findViewById(R.id.btn_dashboard);
+        btnEvents = v.findViewById(R.id.btn_events);
         btnLetters = v.findViewById(R.id.btn_letters);
 
         prefs = new PrefsHelper(requireContext());
@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
         bindPhotoFromPrefs(false);
         fetchHeaderFromApiIfNeeded();
 
-        btnDashboard.setOnClickListener(v1 -> {
+        btnEvents.setOnClickListener(v1 -> {
             if (!isAdded()) return;
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
@@ -88,7 +88,7 @@ public class HomeFragment extends Fragment {
         try { if (imgProfile != null) Glide.with(this).clear(imgProfile); } catch (Exception ignored) {}
         imgProfile = null;
         tvUsername = null;
-        btnDashboard = null;
+        btnEvents = null;
         btnLetters = null;
     }
 

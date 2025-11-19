@@ -31,7 +31,7 @@ import java.util.List;
 public class LettersFragment extends Fragment {
 
     private EditText etSearch;
-    private Button btnFilter, btnAll, btnPending, btnOnHand, btnTurnedIn, btnTurnInLate;
+    private Button btnFilter, btnAll, btnPending, btnOnHand, btnTurnedIn, btnTurnInLate, btnReload;
     private RecyclerView recyclerView;
     private LettersAdapter adapter;
     private List<Letter> allLetters = new ArrayList<>();
@@ -52,6 +52,9 @@ public class LettersFragment extends Fragment {
         apiClient = new ApiClient(requireContext());
         loadRealDataFromWebsite();
 
+        btnReload = root.findViewById(R.id.btnReload);
+        btnReload.setOnClickListener(v -> loadRealDataFromWebsite());
+
         return root;
     }
 
@@ -64,29 +67,13 @@ public class LettersFragment extends Fragment {
         btnOnHand = root.findViewById(R.id.btnOnHand);
         btnTurnedIn = root.findViewById(R.id.btnTurnedIn);
         btnTurnInLate = root.findViewById(R.id.btnTurnInLate);
+        btnReload = root.findViewById(R.id.btnReload);
     }
 
     private void setupRecyclerView() {
-        adapter = new LettersAdapter(filteredLetters);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new LettersAdapter(filteredLetters);
         recyclerView.setAdapter(adapter);
-    }
-
-    private void setupListeners() {
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterLetters(s.toString());
-            }
-            @Override public void afterTextChanged(Editable s) {}
-        });
-
-        btnFilter.setOnClickListener(v -> showFilterDialog());
-        btnAll.setOnClickListener(v -> filterByStatus("ALL"));
-        btnPending.setOnClickListener(v -> filterByStatus("PENDING"));
-        btnOnHand.setOnClickListener(v -> filterByStatus("ON HAND"));
-        btnTurnedIn.setOnClickListener(v -> filterByStatus("TURNED IN"));
-        btnTurnInLate.setOnClickListener(v -> filterByStatus("TURN IN LATE"));
     }
 
     private void loadRealDataFromWebsite() {
@@ -211,5 +198,21 @@ public class LettersFragment extends Fragment {
         x = x.replaceAll("\\s+", " ");
         if ("TURN IN".equals(x)) x = "TURNED IN";
         return x;
+    }
+
+    private void setupListeners() {
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterLetters(s.toString());
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
+        btnFilter.setOnClickListener(v -> showFilterDialog());
+        btnAll.setOnClickListener(v -> filterByStatus("ALL"));
+        btnPending.setOnClickListener(v -> filterByStatus("PENDING"));
+        btnOnHand.setOnClickListener(v -> filterByStatus("ON HAND"));
+        btnTurnedIn.setOnClickListener(v -> filterByStatus("TURNED IN"));
+        btnTurnInLate.setOnClickListener(v -> filterByStatus("TURN IN LATE"));
     }
 }

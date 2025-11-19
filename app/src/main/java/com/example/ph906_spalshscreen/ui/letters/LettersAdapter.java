@@ -41,20 +41,30 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
         return new LetterViewHolder(view);
     }
 
+  public static class LetterViewHolder extends RecyclerView.ViewHolder {
+        TextView tvPh906, tvName, tvAddress, tvType, tvDeadline, tvStatus;
+        public LetterViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvPh906 = itemView.findViewById(R.id.tvPh906);
+            tvName = itemView.findViewById(R.id.tvName);
+            tvAddress = itemView.findViewById(R.id.tvAddress);
+            tvType = itemView.findViewById(R.id.tvType);
+            tvDeadline = itemView.findViewById(R.id.tvDeadline);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
+        }
+    }
+
     @Override
     public void onBindViewHolder(@NonNull LetterViewHolder holder, int position) {
         Letter letter = letterList.get(position);
-
-        // ✅ Safe null-handling with defaults
         String ph906 = safeText(letter.getPh906());
         String fullName = safeText(letter.getFullName());
         String address = safeText(letter.getAddress());
         String type = safeText(letter.getType());
         String deadline = safeText(letter.getDeadline());
         String rawStatus = safeText(letter.getStatus());
-
         holder.tvPh906.setText(ph906);
-        holder.tvFullName.setText(fullName);
+        holder.tvName.setText(fullName);
         holder.tvAddress.setText(address);
         holder.tvType.setText(type);
         holder.tvDeadline.setText(deadline);
@@ -101,19 +111,6 @@ public class LettersAdapter extends RecyclerView.Adapter<LettersAdapter.LetterVi
     @Override
     public int getItemCount() {
         return letterList != null ? letterList.size() : 0; // ✅ safe
-    }
-
-    static class LetterViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPh906, tvFullName, tvAddress, tvType, tvDeadline, tvStatus;
-        public LetterViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvPh906 = itemView.findViewById(R.id.tvPh906);
-            tvFullName = itemView.findViewById(R.id.tvName);
-            tvAddress = itemView.findViewById(R.id.tvAddress);
-            tvType = itemView.findViewById(R.id.tvType);
-            tvDeadline = itemView.findViewById(R.id.tvDeadline);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
-        }
     }
 
     // ✅ Helper method: avoid null text

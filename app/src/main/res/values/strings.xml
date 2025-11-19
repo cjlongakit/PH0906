@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dashboard">DASHBOARD</string>
+    <string name="events">EVENTS</string>
     <string name="letters">LETTERS</string>
     <string name="username">Rodney</string>
     <string name="app_name">Hello, PH0906!</string>
