@@ -1,6 +1,9 @@
 package com.example.ph906_spalshscreen;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,10 +14,13 @@ import android.widget.TextView;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -38,6 +44,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int GROUP_TERMS = 1001;
     private static final int GROUP_PRIVACY = 1002;
 
+    // Notification permission launcher
+    private final ActivityResultLauncher<String> notificationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Log.d(TAG, "Notification permission granted");
+                } else {
+                    Log.d(TAG, "Notification permission denied");
+                    Toast.makeText(this, "Notifications disabled. You won't receive updates.", Toast.LENGTH_LONG).show();
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
             return;
         }
+
+        // Request notification permission for Android 13+
+        requestNotificationPermission();
 
         // Setup Toolbar
         toolbar = findViewById(R.id.toolbar);
@@ -99,6 +119,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .beginTransaction()
                 .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
+        }
+    }
+
+    private void requestNotificationPermission() {
+        // Request notification permission for Android 13 and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            } else {
+                Log.d(TAG, "Notification permission already granted");
+            }
         }
     }
 

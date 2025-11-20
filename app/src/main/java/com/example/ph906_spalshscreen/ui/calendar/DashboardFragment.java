@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,6 +73,10 @@ public class DashboardFragment extends Fragment {
         calendarView.setDynamicHeightEnabled(true);
         upcomingEventsLayout = v.findViewById(R.id.upcomingEvents);
         tvHeader = v.findViewById(R.id.tv_upcoming);
+
+        // Reload button
+        Button btnReloadEvents = v.findViewById(R.id.btnReloadEvents);
+        btnReloadEvents.setOnClickListener(view -> reloadAllEvents());
 
         // Decorator for event dots
         eventDecorator = new EventDayDecorator(daysWithEvents);
@@ -264,6 +269,47 @@ public class DashboardFragment extends Fragment {
             tv.setText(line);
             tv.setPadding(0, 8, 0, 16);
             upcomingEventsLayout.addView(tv);
+        }
+    }
+
+    private void reloadAllEvents() {
+        // Clear all caches
+        cacheByDate.clear();
+        cacheUpcoming = null;
+        daysWithEvents.clear();
+
+        // Show loading message
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(() ->
+                Toast.makeText(getContext(), "Reloading events...", Toast.LENGTH_SHORT).show()
+            );
+        }
+
+        // Reload upcoming events
+        showUpcoming();
+
+        // Reload calendar decorations for current month
+        CalendarDay current = calendarView.getCurrentDate();
+        loadMonthEvents(current.getYear(), current.getMonth());
+    }
+
+    private void testEventNotification() {
+        // Manually trigger an event notification for testing
+        if (getActivity() != null) {
+            android.app.PendingIntent pi = android.app.PendingIntent.getActivity(
+                getContext(),
+                1002,
+                getActivity().getPackageManager().getLaunchIntentForPackage(getActivity().getPackageName()),
+                android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE
+            );
+            com.example.ph906_spalshscreen.notifications.NotificationUtils.notify(
+                getContext(),
+                1002,
+                "Test Event Notification",
+                "This is a test notification. If you see this, notifications are working!",
+                pi
+            );
+            Toast.makeText(getContext(), "Test notification sent!", Toast.LENGTH_SHORT).show();
         }
     }
 

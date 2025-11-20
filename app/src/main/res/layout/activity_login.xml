@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Username (ex. PH0906-700)"
-            android:textColor="#FFD700"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:layout_marginBottom="8dp"
             android:layout_gravity="start" />
@@ -106,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Password"
-            android:textColor="#FFD700"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:layout_marginBottom="8dp"
             android:layout_gravity="start" />
@@ -140,7 +140,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Default password YYYY-MM-DD"
-            android:textColor="#FFD700"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:layout_marginBottom="16dp"
             android:layout_gravity="start" />
@@ -164,7 +164,7 @@
             android:text="Forgot Your Password?"
             android:textAlignment="center"
             android:textColor="#E0E0E0"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="19dp"
             android:layout_gravity="center_horizontal"
             android:clickable="true"
             android:focusable="true"/>

@@ -12,7 +12,7 @@
         android:background="@drawable/gradient_bg"
         tools:context=".ui.letters.LettersFragment">
 
-        <!-- Search Bar + Filter -->
+        <!-- Search Bar -->
         <LinearLayout
             android:id="@+id/layout_search"
             android:layout_width="0dp"
@@ -26,23 +26,14 @@
 
             <EditText
                 android:id="@+id/etSearch"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_weight="1"
                 android:hint="Search by ID or name"
                 android:background="@android:color/transparent"
                 android:textColor="@android:color/white"
                 android:textColorHint="#AAAAAA"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp" />
-
-            <Button
-                android:id="@+id/btnFilter"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:text="⚙"
-                android:backgroundTint="@color/colorAccent"
-                android:textColor="@android:color/white" />
         </LinearLayout>
 
         <!-- Filter Buttons + Reload Button -->

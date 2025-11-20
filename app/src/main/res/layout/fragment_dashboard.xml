@@ -31,17 +31,36 @@
         app:mcv_firstDayOfWeek="monday" />
 
     <!-- Upcoming header -->
-    <TextView
-        android:id="@+id/tv_upcoming"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="UPCOMING EVENTS"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:background="#444444"
-        android:textColor="@android:color/white"
-        android:padding="10dp"
-        android:layout_marginBottom="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/tv_upcoming"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="UPCOMING EVENTS"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="#444444"
+            android:textColor="@android:color/white"
+            android:padding="10dp" />
+
+
+        <Button
+            android:id="@+id/btnReloadEvents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reload"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="@android:color/white"
+            android:layout_marginStart="4dp"
+            android:padding="8dp" />
+    </LinearLayout>
 
     <!-- Event container -->
     <ScrollView

@@ -31,7 +31,7 @@ import java.util.List;
 public class LettersFragment extends Fragment {
 
     private EditText etSearch;
-    private Button btnFilter, btnAll, btnPending, btnOnHand, btnTurnedIn, btnTurnInLate, btnReload;
+    private Button btnAll, btnPending, btnOnHand, btnTurnedIn, btnTurnInLate, btnReload;
     private RecyclerView recyclerView;
     private LettersAdapter adapter;
     private List<Letter> allLetters = new ArrayList<>();
@@ -60,7 +60,6 @@ public class LettersFragment extends Fragment {
 
     private void initViews(View root) {
         etSearch = root.findViewById(R.id.etSearch);
-        btnFilter = root.findViewById(R.id.btnFilter);
         recyclerView = root.findViewById(R.id.recyclerViewLetters);
         btnAll = root.findViewById(R.id.btnAll);
         btnPending = root.findViewById(R.id.btnPending);
@@ -172,10 +171,6 @@ public class LettersFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    private void showFilterDialog() {
-        Toast.makeText(getContext(), "Filter by status coming soon", Toast.LENGTH_SHORT).show();
-    }
-
     private void filterByStatus(String status) {
         filteredLetters.clear();
         if (status.equals("ALL")) {
@@ -208,7 +203,6 @@ public class LettersFragment extends Fragment {
             }
             @Override public void afterTextChanged(Editable s) {}
         });
-        btnFilter.setOnClickListener(v -> showFilterDialog());
         btnAll.setOnClickListener(v -> filterByStatus("ALL"));
         btnPending.setOnClickListener(v -> filterByStatus("PENDING"));
         btnOnHand.setOnClickListener(v -> filterByStatus("ON HAND"));

@@ -671,4 +671,139 @@ public class ApiClient {
             }
         });
     }
+
+    // ==============================
+    // FORGOT PASSWORD: Validate username/email, then reset password
+    // ==============================
+    public void requestPasswordResetWithEmail(JSONObject payload, ApiCallback callback) {
+        String[] endpoints = new String[] {
+            BASE_URL + "/request_password_reset.php",
+            BASE_URL + "/api.php?resource=request_password_reset",
+            BASE_URL + "/api.php/request_password_reset"
+        };
+        attemptPasswordResetRequest(payload, endpoints, 0, callback);
+    }
+
+    private void attemptPasswordResetRequest(JSONObject payload, String[] endpoints, int idx, ApiCallback callback) {
+        if (idx >= endpoints.length) {
+            callback.onError("Unable to validate username/email");
+            return;
+        }
+        RequestBody body = RequestBody.create(payload.toString(), JSON);
+        Request request = new Request.Builder()
+                .url(endpoints[idx])
+                .addHeader("Accept", "application/json")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                // Network error, try next endpoint
+                attemptPasswordResetRequest(payload, endpoints, idx + 1, callback);
+            }
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String res = response.body() != null ? response.body().string() : "";
+                try {
+                    JSONObject json = new JSONObject(res);
+                    if (json.optBoolean("success", false) || "success".equalsIgnoreCase(json.optString("status"))) {
+                        callback.onSuccess(json);
+                    } else {
+                        // Server returned an error - if it's the last endpoint, report it; otherwise try next
+                        String errorMsg = json.optString("message", "Request failed");
+                        if (idx + 1 >= endpoints.length) {
+                            // Last endpoint, report the actual error
+                            callback.onError(errorMsg);
+                        } else {
+                            // Try next endpoint
+                            attemptPasswordResetRequest(payload, endpoints, idx + 1, callback);
+                        }
+                    }
+                } catch (JSONException e) {
+                    // JSON parse error - if it's the last endpoint, report it; otherwise try next
+                    if (idx + 1 >= endpoints.length) {
+                        callback.onError("Server error: " + (res.length() > 100 ? res.substring(0, 100) : res));
+                    } else {
+                        attemptPasswordResetRequest(payload, endpoints, idx + 1, callback);
+                    }
+                }
+            }
+        });
+    }
+
+    public void resetPasswordWithEmail(JSONObject payload, ApiCallback callback) {
+        String[] endpoints = new String[] {
+            BASE_URL + "/reset_password.php",
+            BASE_URL + "/api.php?resource=reset_password",
+            BASE_URL + "/api.php/reset_password"
+        };
+        attemptPasswordReset(payload, endpoints, 0, callback);
+    }
+
+    private void attemptPasswordReset(JSONObject payload, String[] endpoints, int idx, ApiCallback callback) {
+        if (idx >= endpoints.length) {
+            callback.onError("Unable to reset password");
+            return;
+        }
+        RequestBody body = RequestBody.create(payload.toString(), JSON);
+        Request request = new Request.Builder()
+                .url(endpoints[idx])
+                .addHeader("Accept", "application/json")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                attemptPasswordReset(payload, endpoints, idx + 1, callback);
+            }
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String res = response.body() != null ? response.body().string() : "";
+                try {
+                    JSONObject json = new JSONObject(res);
+                    if (json.optBoolean("success", false) || "success".equalsIgnoreCase(json.optString("status"))) {
+                        callback.onSuccess(json);
+                    } else {
+                        attemptPasswordReset(payload, endpoints, idx + 1, callback);
+                    }
+                } catch (JSONException e) {
+                    attemptPasswordReset(payload, endpoints, idx + 1, callback);
+                }
+            }
+        });
+    }
+
+    /**
+     * Resets password using username and birthday (ISO format).
+     * POST to /reset_password.php with {username, birthday}
+     */
+    public void resetPasswordWithBirthday(JSONObject payload, ApiCallback callback) {
+        String url = BASE_URL + "/reset_password.php";
+        RequestBody body = RequestBody.create(payload.toString(), JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Accept", "application/json")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                callback.onError("Network error: " + e.getMessage());
+            }
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = response.body() != null ? response.body().string() : "";
+                try {
+                    JSONObject jsonResponse = new JSONObject(responseBody);
+                    if (jsonResponse.optString("status").equalsIgnoreCase("success") || jsonResponse.optBoolean("success", false)) {
+                        callback.onSuccess(jsonResponse);
+                    } else {
+                        callback.onError(jsonResponse.optString("message", "Reset failed"));
+                    }
+                } catch (JSONException e) {
+                    callback.onError("JSON parse error: " + e.getMessage());
+                }
+            }
+        });
+    }
 }

@@ -3,6 +3,7 @@ package com.example.ph906_spalshscreen.notifications;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
@@ -27,6 +28,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class SyncWorker extends Worker {
+    private static final String TAG = "SyncWorker";
     private static final String BASE = "https://hjcdc.swuitapp.com/api";
     private final OkHttpClient http = new OkHttpClient();
 
@@ -37,9 +39,13 @@ public class SyncWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        Log.d(TAG, "SyncWorker started");
         Context ctx = getApplicationContext();
         PrefsHelper prefs = new PrefsHelper(ctx);
-        if (!prefs.isLoggedIn()) return Result.success();
+        if (!prefs.isLoggedIn()) {
+            Log.d(TAG, "User not logged in, skipping sync");
+            return Result.success();
+        }
 
         // Ensure channel exists
         NotificationUtils.ensureChannel(ctx);
@@ -49,24 +55,33 @@ public class SyncWorker extends Worker {
             String lettersSig = fetchLettersSignature(prefs);
             if (lettersSig != null) {
                 String last = prefs.getLastLettersSig();
+                Log.d(TAG, "Letters signature - Current: " + lettersSig + ", Last: " + last);
                 if (last != null && !last.equals(lettersSig)) {
+                    Log.d(TAG, "Letters changed, posting notification");
                     postLettersNotification(ctx);
                 }
                 prefs.saveLastLettersSig(lettersSig);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking letters: " + e.getMessage(), e);
+        }
 
         try {
             String eventsSig = fetchEventsSignature();
             if (eventsSig != null) {
                 String last = new PrefsHelper(ctx).getLastEventsSig();
+                Log.d(TAG, "Events signature - Current: " + eventsSig + ", Last: " + last);
                 if (last != null && !last.equals(eventsSig)) {
+                    Log.d(TAG, "Events changed, posting notification");
                     postEventsNotification(ctx);
                 }
                 new PrefsHelper(ctx).saveLastEventsSig(eventsSig);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking events: " + e.getMessage(), e);
+        }
 
+        Log.d(TAG, "SyncWorker completed");
         return Result.success();
     }
 
@@ -157,4 +172,3 @@ public class SyncWorker extends Worker {
         WorkManager.getInstance(ctx); // ensure initialized
     }
 }
-
