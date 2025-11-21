@@ -31,7 +31,7 @@ public class ProfileFragment extends Fragment {
 
     private TextView tvUserId, tvFirstName, tvLastName, tvBirthdate, tvNickname,
             tvMobile, tvAddress, tvGuardian, tvGuardianMobile, tvBaptized, tvTeacher,
-            tvSex, tvCaseworker, tvAge, tvEmail;
+            tvSex, tvCaseworker, tvAge;
     private Button btnEdit;
     private ImageView imgProfile;
 
@@ -66,7 +66,6 @@ public class ProfileFragment extends Fragment {
         tvBirthdate = v.findViewById(R.id.tv_birthdate);
         tvNickname = v.findViewById(R.id.tv_nickname);
         tvMobile = v.findViewById(R.id.tv_mobile);
-        tvEmail = v.findViewById(R.id.tv_email);
         tvAddress = v.findViewById(R.id.tv_address);
         tvGuardian = v.findViewById(R.id.tv_guardian);
         tvGuardianMobile = v.findViewById(R.id.tv_guardian_mobile);
@@ -99,7 +98,6 @@ public class ProfileFragment extends Fragment {
             intent.putExtra("birthdate", safe(tvBirthdate));
             intent.putExtra("nickname", safe(tvNickname));
             intent.putExtra("mobile", safe(tvMobile));
-            intent.putExtra("email", safe(tvEmail));
             intent.putExtra("address", safe(tvAddress));
             intent.putExtra("guardian", safe(tvGuardian));
             intent.putExtra("guardianMobile", safe(tvGuardianMobile));
@@ -154,7 +152,6 @@ public class ProfileFragment extends Fragment {
             String mobile = firstNonEmpty(obj.optString("mobile_number", ""), obj.optString("mobile", ""));
             set(tvMobile, mobile);
             
-            set(tvEmail, obj.optString("email", ""));
             set(tvAddress,  obj.optString("address", ""));
             set(tvGuardian, obj.optString("guardian_name", ""));
             set(tvGuardianMobile, obj.optString("guardian_mobile", ""));

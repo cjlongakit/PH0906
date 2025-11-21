@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.ph906_spalshscreen.R;
+import com.example.ph906_spalshscreen.notifications.SyncWorker;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -74,9 +75,16 @@ public class DashboardFragment extends Fragment {
         upcomingEventsLayout = v.findViewById(R.id.upcomingEvents);
         tvHeader = v.findViewById(R.id.tv_upcoming);
 
+        // Trigger instant notification check
+        SyncWorker.checkNow(requireContext());
+
         // Reload button
         Button btnReloadEvents = v.findViewById(R.id.btnReloadEvents);
-        btnReloadEvents.setOnClickListener(view -> reloadAllEvents());
+        btnReloadEvents.setOnClickListener(view -> {
+            // Trigger instant notification check on reload
+            SyncWorker.checkNow(requireContext());
+            reloadAllEvents();
+        });
 
         // Decorator for event dots
         eventDecorator = new EventDayDecorator(daysWithEvents);

@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -68,14 +69,22 @@ public class SyncWorker extends Worker {
 
         try {
             String eventsSig = fetchEventsSignature();
+            Log.d(TAG, "Fetching events signature...");
             if (eventsSig != null) {
-                String last = new PrefsHelper(ctx).getLastEventsSig();
+                String last = prefs.getLastEventsSig();
                 Log.d(TAG, "Events signature - Current: " + eventsSig + ", Last: " + last);
-                if (last != null && !last.equals(eventsSig)) {
+
+                // Fixed: Initialize with current signature on first run, then detect changes
+                if (last == null) {
+                    Log.d(TAG, "First time checking events, saving initial signature");
+                    prefs.saveLastEventsSig(eventsSig);
+                } else if (!last.equals(eventsSig)) {
                     Log.d(TAG, "Events changed, posting notification");
                     postEventsNotification(ctx);
+                    prefs.saveLastEventsSig(eventsSig);
                 }
-                new PrefsHelper(ctx).saveLastEventsSig(eventsSig);
+            } else {
+                Log.w(TAG, "Failed to fetch events signature (null)");
             }
         } catch (Exception e) {
             Log.e(TAG, "Error checking events: " + e.getMessage(), e);
@@ -90,7 +99,7 @@ public class SyncWorker extends Worker {
         if (rawId == null || rawId.isEmpty()) return null;
         String digits = rawId.replaceAll("[^0-9]", "");
         String url = BASE + "/get_students.php?_ts=" + System.currentTimeMillis();
-        Request req = new Request.Builder().url(url).get().addHeader("Accept","application/json").build();
+        Request req = new Request.Builder().url(url).get().addHeader("Accept", "application/json").build();
         try (Response res = http.newCall(req).execute()) {
             if (!res.isSuccessful()) return null;
             String body = res.body() != null ? res.body().string() : "";
@@ -118,7 +127,7 @@ public class SyncWorker extends Worker {
 
     private String fetchEventsSignature() throws IOException {
         String url = BASE + "/events.php?upcoming=1&_ts=" + System.currentTimeMillis();
-        Request req = new Request.Builder().url(url).get().addHeader("Accept","application/json").build();
+        Request req = new Request.Builder().url(url).get().addHeader("Accept", "application/json").build();
         try (Response res = http.newCall(req).execute()) {
             if (!res.isSuccessful()) return null;
             String body = res.body() != null ? res.body().string() : "";
@@ -170,5 +179,19 @@ public class SyncWorker extends Worker {
                 .build();
         // Keep using existing unique work if set by PH906App; here just placeholder
         WorkManager.getInstance(ctx); // ensure initialized
+    }
+
+    /**
+     * Trigger an immediate one-time sync check for instant notifications
+     */
+    public static void checkNow(Context ctx) {
+        Log.d(TAG, "Triggering immediate sync check");
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+        OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(SyncWorker.class)
+                .setConstraints(constraints)
+                .build();
+        WorkManager.getInstance(ctx).enqueue(request);
     }
 }

@@ -42,20 +42,31 @@ public class LoginActivity extends AppCompatActivity {
         apiClient = new ApiClient(this);
         prefs = new PrefsHelper(this);
 
-        // If stored session is incomplete, reset it to avoid crashing on auto-login
+        // DEBUG: Log current saved session to see what's stored
+        Log.d(TAG, "=== Checking saved session ===");
+        Log.d(TAG, "isLoggedIn: " + prefs.isLoggedIn());
+        Log.d(TAG, "PH906: " + prefs.getPh906());
+        Log.d(TAG, "Token: " + (prefs.getToken() != null ? "exists" : "null"));
+        Log.d(TAG, "Full Name: " + prefs.getFullName());
+
+        // Check if user has a valid saved session
+        // If corrupted session, clear it
         if (prefs.isLoggedIn() && (prefs.getPh906() == null || prefs.getToken() == null)) {
             Log.w(TAG, "Corrupted session detected. Clearing.");
             prefs.clearAll();
         }
 
-        // Auto-login only if complete session exists
+        // Auto-login if user has valid session (stay logged in until logout)
         if (prefs.isLoggedIn() && prefs.getPh906() != null && prefs.getToken() != null) {
-            String savedVersion = prefs.getVersion(); // PrefsHelper defaults to "minor"
-            Log.d(TAG, "Auto-login. ph906=" + prefs.getPh906() + " version=" + savedVersion);
+            String savedVersion = prefs.getVersion();
+            Log.d(TAG, "Auto-login with saved session. ph906=" + prefs.getPh906() + " version=" + savedVersion);
             goNext(savedVersion);
             return;
         }
 
+        Log.d(TAG, "No valid session found - showing login screen");
+
+        // Setup login button
         btnLogin.setOnClickListener(v -> {
             String usernameRaw = etPh906.getText().toString().trim();
             String birthdayRaw = etBirthday.getText().toString().trim();

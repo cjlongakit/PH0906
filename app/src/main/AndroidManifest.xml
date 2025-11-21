@@ -13,13 +13,22 @@
     <!-- Notification permission for Android 13+ (API 33+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Wake lock to allow background work even when device is sleeping -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Receive boot completed to restart background work after device reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Foreground service permission for Android 9+ -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <!-- Declare camera feature as optional to resolve lint error -->
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
 
     <application
         android:name=".PH906App"
         android:label="@string/app_name"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@drawable/ph906"
         android:roundIcon="@drawable/ph906"
         android:supportsRtl="true"
@@ -57,6 +66,18 @@
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".ui.profile.EditProfileActivity" android:exported="false" />
 
+        <!-- Broadcast receiver to restart background work after device reboot -->
+        <receiver
+            android:name=".notifications.BootReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 </manifest>

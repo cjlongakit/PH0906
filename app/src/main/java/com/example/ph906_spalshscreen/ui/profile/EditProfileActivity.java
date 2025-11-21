@@ -44,7 +44,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private ImageView imgProfileEdit;
     private Button btnChoosePhoto, btnTakePhoto;
     private EditText etFirstName, etLastName, etBirthdate, etSex, etAge, etNickname,
-            etMobileNumber, etEmail, etAddress, etCaseworkerAssigned, etGuardianName, etGuardianMobile,
+            etMobileNumber, etAddress, etCaseworkerAssigned, etGuardianName, etGuardianMobile,
             etWaterBaptized, etTeacher;
     private Button btnSave, btnCancel;
 
@@ -140,7 +140,6 @@ public class EditProfileActivity extends AppCompatActivity {
         etAge = findViewById(R.id.et_age);
         etNickname = findViewById(R.id.et_nickname);
         etMobileNumber = findViewById(R.id.et_mobile_number);
-        etEmail = findViewById(R.id.et_email);
         etAddress = findViewById(R.id.et_address);
         etCaseworkerAssigned = findViewById(R.id.et_caseworker_assigned);
         etGuardianName = findViewById(R.id.et_guardian_name);
@@ -184,7 +183,6 @@ public class EditProfileActivity extends AppCompatActivity {
             setIfNonEmpty(etBirthdate, getIntent().getStringExtra("birthdate"));
             setIfNonEmpty(etNickname, getIntent().getStringExtra("nickname"));
             setIfNonEmpty(etMobileNumber, getIntent().getStringExtra("mobile"));
-            setIfNonEmpty(etEmail, getIntent().getStringExtra("email"));
             setIfNonEmpty(etAddress, getIntent().getStringExtra("address"));
             setIfNonEmpty(etGuardianName, getIntent().getStringExtra("guardian"));
             setIfNonEmpty(etGuardianMobile, getIntent().getStringExtra("guardianMobile"));
@@ -336,7 +334,6 @@ public class EditProfileActivity extends AppCompatActivity {
             payload.put("teacher", etTeacher.getText().toString().trim());
             payload.put("nickname", etNickname.getText().toString().trim());
             payload.put("mobile_number", etMobileNumber.getText().toString().trim());
-            payload.put("email", etEmail.getText().toString().trim());
             payload.put("address", etAddress.getText().toString().trim());
             payload.put("guardian_name", etGuardianName.getText().toString().trim());
             payload.put("guardian_mobile", etGuardianMobile.getText().toString().trim());

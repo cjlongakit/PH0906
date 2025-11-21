@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ph906_spalshscreen.R;
 import com.example.ph906_spalshscreen.api.ApiClient;
 import com.example.ph906_spalshscreen.api.ApiCallback;
+import com.example.ph906_spalshscreen.notifications.SyncWorker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,10 +51,18 @@ public class LettersFragment extends Fragment {
         setupListeners();
 
         apiClient = new ApiClient(requireContext());
+
+        // Trigger instant notification check
+        SyncWorker.checkNow(requireContext());
+
         loadRealDataFromWebsite();
 
         btnReload = root.findViewById(R.id.btnReload);
-        btnReload.setOnClickListener(v -> loadRealDataFromWebsite());
+        btnReload.setOnClickListener(v -> {
+            // Trigger instant notification check on reload
+            SyncWorker.checkNow(requireContext());
+            loadRealDataFromWebsite();
+        });
 
         return root;
     }

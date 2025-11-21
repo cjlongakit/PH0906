@@ -21,11 +21,12 @@ public class NotificationUtils {
     public static void ensureChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                    CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH); // Changed to HIGH for better visibility
             channel.setDescription("Notifications for new letters and events");
             channel.enableLights(true);
             channel.setLightColor(Color.BLUE);
             channel.enableVibration(true);
+            channel.setShowBadge(true); // Show badge on app icon
             NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             if (nm != null) {
                 nm.createNotificationChannel(channel);
@@ -57,8 +58,10 @@ public class NotificationUtils {
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                     .setAutoCancel(true)
                     .setContentIntent(contentIntent)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setDefaults(NotificationCompat.DEFAULT_ALL);
+                    .setPriority(NotificationCompat.PRIORITY_HIGH) // Changed to HIGH
+                    .setDefaults(NotificationCompat.DEFAULT_ALL)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // Show on lock screen
+                    .setCategory(NotificationCompat.CATEGORY_MESSAGE); // Categorize as message
 
             nm.notify(id, builder.build());
             Log.d(TAG, "Notification posted: id=" + id + ", title=" + title);

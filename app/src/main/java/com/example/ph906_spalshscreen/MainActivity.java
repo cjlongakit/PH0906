@@ -25,6 +25,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.ph906_spalshscreen.api.ApiClient;
+import com.example.ph906_spalshscreen.notifications.SyncWorker;
 import com.example.ph906_spalshscreen.ui.about.AboutFragment;
 import com.example.ph906_spalshscreen.ui.letters.LettersFragment;
 import com.example.ph906_spalshscreen.ui.profile.ProfileFragment;
@@ -72,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Request notification permission for Android 13+
         requestNotificationPermission();
+
+        // Trigger instant notification check when app starts
+        SyncWorker.checkNow(this);
 
         // Setup Toolbar
         toolbar = findViewById(R.id.toolbar);
