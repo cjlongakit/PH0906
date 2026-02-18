@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice 1: Create a Clickable Button</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        #root {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid #4CAF50;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function PressButton() {
+            const showAlert = () => {
+                alert("You pressed the button!");
+            };
+            
+            return (
+                <div>
+                    <h1>Practice 1: Create a Clickable Button</h1>
+                    <button onClick={showAlert}>Press Me!</button>
+                    
+                    <div style={{ marginTop: '30px', padding: '15px', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
+                        <h3>Check Your Understanding:</h3>
+                        <ul>
+                            <li><strong>What React feature makes the button "listen" for a click?</strong>
+                                <br/>The onClick event handler
+                            </li>
+                            <li><strong>Where does the message come from?</strong>
+                                <br/>From the showAlert() function that calls alert()
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(
+            <PressButton />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>

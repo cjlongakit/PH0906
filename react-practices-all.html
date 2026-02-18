@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Practice Activities - All Three Exercises</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .practice-section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        .practice1-btn {
+            border: 2px solid #4CAF50;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .practice3-btn {
+            border: 2px solid #4CAF50;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .practice3-btn.reset {
+            background-color: #f44336;
+            border-color: #f44336;
+        }
+        .counter-btn {
+            border: 2px solid #333;
+            color: white;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #555;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        p {
+            font-size: 18px;
+            margin: 15px 0;
+        }
+        .info-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        .info-box ul {
+            margin: 10px 0;
+        }
+        .info-box li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 React Practice Activities</h1>
+        <div id="practice1"></div>
+        <div id="practice2"></div>
+        <div id="practice3"></div>
+    </div>
+
+    <script type="text/babel">
+        // Practice 1: Create a Clickable Button
+        function PressButton() {
+            const showAlert = () => {
+                alert("You pressed the button!");
+            };
+            
+            return (
+                <div className="practice-section">
+                    <h2>Practice 1: Create a Clickable Button</h2>
+                    <button className="practice1-btn" onClick={showAlert}>Press Me!</button>
+                    
+                    <div className="info-box">
+                        <h3>Check Your Understanding:</h3>
+                        <ul>
+                            <li><strong>What React feature makes the button "listen" for a click?</strong>
+                                <br/>The onClick event handler
+                            </li>
+                            <li><strong>Where does the message come from?</strong>
+                                <br/>From the showAlert() function that calls alert()
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
+
+        // Practice 2: Build a Click Counter
+        function ClickCounter() {
+            const [count, setCount] = React.useState(0);
+            
+            return (
+                <div className="practice-section">
+                    <h2>Practice 2: Build a Click Counter</h2>
+                    <p>You clicked {count} times.</p>
+                    <button 
+                        className="counter-btn"
+                        onClick={() => setCount(prevCount => prevCount + 1)}
+                        style={{ backgroundColor: count % 2 === 0 ? 'lightblue' : 'lightgreen' }}
+                    >
+                        Click me!
+                    </button>
+                    {count === 5 && <p style={{ color: 'green', fontWeight: 'bold' }}>🎉 Nice clicking!</p>}
+                    
+                    <div className="info-box">
+                        <h3>Check Your Understanding:</h3>
+                        <ul>
+                            <li><strong>How does useState help React remember the number of clicks?</strong>
+                                <br/>useState maintains state across re-renders, preserving the count value
+                            </li>
+                            <li><strong>Which part of the code updates the count?</strong>
+                                <br/>The setCount(count + 1) function inside the onClick handler
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
+
+        // Practice 3: Change Text on Click
+        function ChangeText() {
+            const [message, setMessage] = React.useState("Hello!");
+            
+            return (
+                <div className="practice-section">
+                    <h2>Practice 3: Change Text on Click</h2>
+                    <p style={{ fontWeight: message === "Hello!" ? 'bold' : 'normal' }}>
+                        {message}
+                    </p>
+                    <button className="practice3-btn" onClick={() => setMessage("You clicked the button!")}>
+                        Change Text
+                    </button>
+                    <button className="practice3-btn reset" onClick={() => setMessage("Hello!")}>
+                        Reset Text
+                    </button>
+                    
+                    <div className="info-box">
+                        <h3>Check Your Understanding:</h3>
+                        <ul>
+                            <li><strong>What triggers the text change?</strong>
+                                <br/>The onClick event handler on the buttons that calls setMessage()
+                            </li>
+                            <li><strong>How is this similar to how a mobile app updates its display?</strong>
+                                <br/>Both use state management to update the UI when user interactions occur
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render all three practices
+        ReactDOM.render(<PressButton />, document.getElementById('practice1'));
+        ReactDOM.render(<ClickCounter />, document.getElementById('practice2'));
+        ReactDOM.render(<ChangeText />, document.getElementById('practice3'));
+    </script>
+</body>
+</html>

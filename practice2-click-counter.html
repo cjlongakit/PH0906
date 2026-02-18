@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice 2: Build a Click Counter</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        #root {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid #333;
+            color: white;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function ClickCounter() {
+            const [count, setCount] = React.useState(0);
+            
+            return (
+                <div>
+                    <h1>Practice 2: Build a Click Counter</h1>
+                    <p>You clicked {count} times.</p>
+                    <button 
+                        onClick={() => setCount(prevCount => prevCount + 1)}
+                        style={{ backgroundColor: count % 2 === 0 ? 'lightblue' : 'lightgreen' }}
+                    >
+                        Click me!
+                    </button>
+                    {count === 5 && <p style={{ color: 'green', fontWeight: 'bold' }}>🎉 Nice clicking!</p>}
+                    
+                    <div style={{ marginTop: '30px', padding: '15px', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
+                        <h3>Check Your Understanding:</h3>
+                        <ul>
+                            <li><strong>How does useState help React remember the number of clicks?</strong>
+                                <br/>useState maintains state across re-renders, preserving the count value
+                            </li>
+                            <li><strong>Which part of the code updates the count?</strong>
+                                <br/>The setCount(count + 1) function inside the onClick handler
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(
+            <ClickCounter />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>
