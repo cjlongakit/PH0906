@@ -55,12 +55,12 @@
                     <h1>Practice 2: Build a Click Counter</h1>
                     <p>You clicked {count} times.</p>
                     <button 
-                        onClick={() => setCount(count + 1)}
+                        onClick={() => setCount(prevCount => prevCount + 1)}
                         style={{ backgroundColor: count % 2 === 0 ? 'lightblue' : 'lightgreen' }}
                     >
                         Click me!
                     </button>
-                    {count === 5 && <p style={{ color: 'green', fontWeight: 'bold' }}>Nice clicking!</p>}
+                    {count === 5 && <p style={{ color: 'green', fontWeight: 'bold' }}>🎉 Nice clicking!</p>}
                     
                     <div style={{ marginTop: '30px', padding: '15px', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
                         <h3>Check Your Understanding:</h3>

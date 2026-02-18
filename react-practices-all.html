@@ -133,7 +133,7 @@
                     <p>You clicked {count} times.</p>
                     <button 
                         className="counter-btn"
-                        onClick={() => setCount(count + 1)}
+                        onClick={() => setCount(prevCount => prevCount + 1)}
                         style={{ backgroundColor: count % 2 === 0 ? 'lightblue' : 'lightgreen' }}
                     >
                         Click me!
