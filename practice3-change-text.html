@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice 3: Change Text on Click</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        #root {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid #4CAF50;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:last-child {
+            background-color: #f44336;
+            border-color: #f44336;
+        }
+        button:last-child:hover {
+            background-color: #da190b;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function ChangeText() {
+            const [message, setMessage] = React.useState("Hello!");
+            
+            return (
+                <div>
+                    <h1>Practice 3: Change Text on Click</h1>
+                    <p style={{ fontWeight: message === "Hello!" ? 'bold' : 'normal' }}>
+                        {message}
+                    </p>
+                    <button onClick={() => setMessage("You clicked the button!")}>
+                        Change Text
+                    </button>
+                    <button onClick={() => setMessage("Hello!")}>
+                        Reset Text
+                    </button>
+                    
+                    <div style={{ marginTop: '30px', padding: '15px', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
+                        <h3>Check Your Understanding:</h3>
+                        <ul>
+                            <li><strong>What triggers the text change?</strong>
+                                <br/>The onClick event handler on the buttons that calls setMessage()
+                            </li>
+                            <li><strong>How is this similar to how a mobile app updates its display?</strong>
+                                <br/>Both use state management to update the UI when user interactions occur
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(
+            <ChangeText />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>
